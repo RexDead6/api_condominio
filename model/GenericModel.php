@@ -104,7 +104,7 @@ class GenericModel extends BaseModel{
     //Método insert redefinido para no tener que pasar el objeto en caso de tener los atributos establecidos
     public function insert($obj = null){
 
-        $obj = $this->parse($obj);
+        //$obj = $this->parse($obj);
 
         return parent::insert($obj);
     }

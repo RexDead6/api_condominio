@@ -167,6 +167,13 @@ class BaseModel{
         $this->sql = null;
     }
 
+
+	/**
+	 * @return mixed
+	 */
+	public function getConnection() {
+		return $this->connection;
+	}
 }
 
 

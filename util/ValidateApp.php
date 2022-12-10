@@ -1,6 +1,8 @@
 <?php
+require_once '../model/GenericModel.php';
+
 use LDAP\Result;
-class ValidateApp{
+class ValidateApp extends BaseModel{
 
     /**
      * Metodo para validar que existan ciertas claves dentro de un array
@@ -27,6 +29,19 @@ class ValidateApp{
         }
 
         return $result;
+    }
+
+    //Validar que un registro no se encuentre duplicado
+    public function isDuplicated($table, $column, $value){
+
+        $sql = "SELECT $column FROM $table WHERE $column = '$value'";
+        $query = $this->getConnection()->prepare($sql);
+        $query->execute();
+                
+        if($query->rowCount() > 0){
+
+            return true;
+        }
     }
 }
 ?>

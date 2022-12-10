@@ -18,6 +18,7 @@ function GetById($id){
 }
 
 function Insert(){
-    
+    $controller = new UsuarioController();
+    echo $controller->registrarUsu();
 }
 ?>

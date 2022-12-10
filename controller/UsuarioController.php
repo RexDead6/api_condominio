@@ -5,6 +5,39 @@ require_once '../util/Response.php';
 require_once '../util/ValidateApp.php';
 
 class UsuarioController{
+
+    public function registrarUsu(){
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true);
+        $validate_keys = ValidateApp::keys_array_exist(
+            $JSON_DATA,
+            ['cedUsu', 'nomUsu', 'apeUsu', 'generoUsu', 'telUsu',  'claveUsu']
+        );
+
+        if (!$validate_keys[0]){
+            return (new Response(
+                false, 
+                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+                400
+            ))->json();
+        }
+
+        if ((new ValidateApp())->isDuplicated("usuarios", "cedUsu", $JSON_DATA['cedUsu'])){
+            return (new Response(
+                false, 
+                "Su cédula ya se encuentra registrada", 
+                400
+            ))->json();
+        }
+
+        $JSON_DATA['claveUsu'] = Crypt::hash($JSON_DATA['claveUsu']);
+
+        (new UsuarioModel())->insert($JSON_DATA);
+        return (new Response(
+            true, 
+            "Usuario registrado exitosamente", 
+            201
+        ))->json();
+    }
     public function getAll(){
         $response = new Response(
             true, 
@@ -37,7 +70,7 @@ class UsuarioController{
             return (new Response(
                 false,
                 "Esta Cédula no se encuentra registrada",
-                400
+                404
             ))->json();
         }
 
@@ -51,6 +84,7 @@ class UsuarioController{
 
         $data_response = [
             "id" => $user->getIdUsu(),
+            "statusUsu" => $user->getStatusUsu(),
             "Rol" => $user->getRol()
         ];
 

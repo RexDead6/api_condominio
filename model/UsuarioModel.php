@@ -11,6 +11,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
     protected $cedUsu;
     protected $nomUsu;
     protected $apeUsu;
+	protected $generoUsu;
     protected $telUsu;
     private $claveUsu;
     protected $imgUsu;
@@ -171,6 +172,22 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setRol($Rol): self {
 		$this->Rol = $Rol;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGeneroUsu() {
+		return $this->generoUsu;
+	}
+	
+	/**
+	 * @param mixed $generoUsu 
+	 * @return self
+	 */
+	public function setGeneroUsu($generoUsu): self {
+		$this->generoUsu = $generoUsu;
 		return $this;
 	}
 }
