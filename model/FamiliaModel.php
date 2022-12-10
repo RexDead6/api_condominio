@@ -6,24 +6,13 @@ require_once '../util/JsonSerialize.php';
 class FamiliaModel extends GenericModel implements JsonSerializable{
     use JsonSerializeTrait;
     protected $idFam;
-    protected $jefeUsu;
     protected $descFam;
     protected $hashFam;
     protected $direccion;
+	protected $users;
 
     public function __construct($propiedades = null) {
         parent::__construct('familias', FamiliaModel::class, $propiedades);
-    }
-
-    public function __set($name, $value) {
-        if (isset($this->$name)){
-            $this->{$name} = $value;
-        } else {
-            if (!isset($this->jefeUsu)){
-                $this->jefeUsu = new UsuarioModel();
-            }
-            $this->jefeUsu->set_value($name, $value);
-        }
     }
 
 	/**
@@ -39,22 +28,6 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setIdFam($idFam): self {
 		$this->idFam = $idFam;
-		return $this;
-	}
-	
-	/**
-	 * @return mixed
-	 */
-	public function getJefeUsu() {
-		return $this->jefeUsu;
-	}
-	
-	/**
-	 * @param mixed $jefeUsu 
-	 * @return self
-	 */
-	public function setJefeUsu($jefeUsu): self {
-		$this->jefeUsu = $jefeUsu;
 		return $this;
 	}
 	
@@ -103,6 +76,22 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setDireccion($direccion): self {
 		$this->direccion = $direccion;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getUsers() {
+		return $this->users;
+	}
+	
+	/**
+	 * @param mixed $users 
+	 * @return self
+	 */
+	public function setUsers($users): self {
+		$this->users = $users;
 		return $this;
 	}
 }

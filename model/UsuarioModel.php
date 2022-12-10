@@ -13,7 +13,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
     protected $apeUsu;
 	protected $generoUsu;
     protected $telUsu;
-    private $claveUsu;
+    public $claveUsu;
     protected $imgUsu;
 
     public function __construct($propiedades = null) {

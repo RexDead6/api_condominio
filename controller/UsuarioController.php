@@ -81,7 +81,7 @@ class UsuarioController{
                 400
             ))->json();
         }
-
+        
         $data_response = [
             "id" => $user->getIdUsu(),
             "statusUsu" => $user->getStatusUsu(),

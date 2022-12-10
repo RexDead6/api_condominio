@@ -59,6 +59,7 @@ class BaseModel{
             $keys = implode("`, `",array_keys($obj));
             $values = ":" . implode(", :",array_keys($obj));
             $this->sql = "INSERT INTO $this->table (`$keys`) VALUES($values)";
+            //echo $this->sql;
             $this->execute($obj);
             $id = $this->connection->lastInsertId();
             return $id;
@@ -112,9 +113,14 @@ class BaseModel{
     }
 
     //Método para obtener registros con un inner
-    public function inner($table, $column){
+    public function inner($table, $column, $second_table = null){
+
+        if ($second_table == null){
+            $second_table = $this->table;
+        }
+
         $tbl = substr($table, 0, 3);
-        $self_tbl = substr($this->table, 0, 3);
+        $self_tbl = substr($second_table, 0, 3);
         $this->inner .= "INNER JOIN {$table} AS {$tbl} ON {$tbl}.{$column} = {$self_tbl}.{$column} ";
         return $this;
     }

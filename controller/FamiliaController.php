@@ -1,6 +1,7 @@
 <?php
 require_once '../model/FamiliaModel.php';
 require_once '../model/UsuarioModel.php';
+require_once '../model/GruposFamiliaresModel.php';
 require_once '../util/Response.php';
 require_once '../util/ValidateApp.php';
 
@@ -9,7 +10,7 @@ class FamiliaController{
         $JSON_DATA = json_decode(file_get_contents('php://input'), true);
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['idJefeUsu', 'descFam']
+            ['idJefeUsu', 'descFam', 'direccion']
         );
 
         if (!$validate_keys[0]){
@@ -28,16 +29,45 @@ class FamiliaController{
             ))->json();
         }
 
-        $JSON_DATA['hashFam'] = bin2hex(random_bytes(5));
-        (new FamiliaModel())->insert($JSON_DATA);
+        $idFam = (new FamiliaModel())->insert([
+            "descFam"=>$JSON_DATA['descFam'], 
+            "direccion"=>$JSON_DATA['direccion'],
+            "hashFam" => bin2hex(random_bytes(20))
+        ]);
         $user = (new UsuarioModel())->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->getFirst();
         $user->setStatusUsu(1);
         $user->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->update();
+        (new GruposFamiliaresModel())->insert([
+            "idUsu" => $JSON_DATA['idJefeUsu'],
+            "idFam" => $idFam
+        ]);
         return (new Response(
             true, 
             "Familia Registrada exitosamente",
             201
         ))->json();
+    }
+
+    public function getById($idFam){
+        $fam = (new FamiliaModel)->where("fam.idFam", "=", $idFam)->getFirst();
+
+        if (!isset($fam)){
+            return (new Response(
+                false, 
+                "Familia no encontrada", 
+                404
+            ))->json();
+        }
+
+        $fam->setUsers((new UsuarioModel())->inner("gruposfamiliares", "idUsu")->inner("roles", "idRol")->where("gru.idFam", "=", $idFam)->getAll());
+
+        $response = new Response(
+            true, 
+            "Datos encontrados", 
+            200, 
+            $fam
+        );
+        return $response->json();
     }
 }
 ?>
