@@ -20,6 +20,10 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
         parent::__construct('usuarios', UsuarioModel::class, $propiedades);
     }
 
+	public function set_value($name, $value){
+		$this->{$name} = $value;
+    }
+
     public function __set($name, $value) {
         if (isset($this->$name)){
             $this->{$name} = $value;

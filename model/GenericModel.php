@@ -51,10 +51,17 @@ class GenericModel extends BaseModel{
 
             //Obtenemos el objeto desde el modelo
             if($obj == null){
-
                 foreach ($attributes as $index => $key) {
-
                     if(isset($this->{$key})){
+                        if (is_object($this->{$key})){
+                            foreach ($this->{$key}->getAttributes() as $i => $k) {
+                                if (substr($k, 0, 2) == "id") {
+                                    $finalObject[$k] = $this->{$key}->$k;
+                                    break;
+                                }
+                            }
+                            continue;
+                        }
 
                         $finalObject[$key] = $this->{$key};
                     }
@@ -128,9 +135,4 @@ class GenericModel extends BaseModel{
     }
 
 }
-
-
-
-
-
 ?>

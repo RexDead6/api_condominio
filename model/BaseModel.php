@@ -6,7 +6,7 @@ class BaseModel{
 
     private $connection;
     private $table;
-    private $className;
+    public $className;
     private $sql = null;
     private $wheres = "";
     private $inner = "";
@@ -24,7 +24,7 @@ class BaseModel{
 
             $tbl = substr($this->table, 0, 3);
             $this->sql = "SELECT * FROM {$this->table} AS {$tbl} {$this->inner} {$this->wheres}";
-            
+
             $query = $this->connection->prepare($this->sql);
             $query->execute();
 
