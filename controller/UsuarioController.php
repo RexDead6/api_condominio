@@ -1,5 +1,6 @@
 <?php
 require_once '../model/UsuarioModel.php';
+require_once '../model/FamiliaModel.php';
 require_once '../util/Crypt.php';
 require_once '../util/Response.php';
 require_once '../util/ValidateApp.php';
@@ -81,9 +82,12 @@ class UsuarioController{
                 400
             ))->json();
         }
-        
+
+        $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
+
         $data_response = [
             "id" => $user->getIdUsu(),
+            "idFam" => ($fam != null) ? $fam->getIdFam() : null,
             "statusUsu" => $user->getStatusUsu(),
             "Rol" => $user->getRol()
         ];
