@@ -1,13 +1,15 @@
 <?php
+use LDAP\Result;
 require_once '../model/FamiliaModel.php';
 require_once '../model/UsuarioModel.php';
 require_once '../model/GruposFamiliaresModel.php';
 require_once '../util/Response.php';
 require_once '../util/ValidateApp.php';
+require_once '../model/TokenAccess.php';
 
 class FamiliaController{
     public function registrarFamilia(){
-        $JSON_DATA = json_decode(file_get_contents('php://input'), true);
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
             ['idJefeUsu', 'descFam', 'direccion']
@@ -34,13 +36,23 @@ class FamiliaController{
             "direccion"=>$JSON_DATA['direccion'],
             "hashFam" => bin2hex(random_bytes(20))
         ]);
+
+        if ($idFam == false){
+            return (new Response(
+                false, 
+                "No se ha podido registrar a la familia, intende de nuevo",
+                500
+            ))->json();
+        }
+
         $user = (new UsuarioModel())->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->getFirst();
         $user->setStatusUsu(1);
         $user->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->update();
-        (new GruposFamiliaresModel())->insert([
+        $result = (new GruposFamiliaresModel())->insert([
             "idUsu" => $JSON_DATA['idJefeUsu'],
             "idFam" => $idFam
         ]);
+        
         return (new Response(
             true, 
             "Familia Registrada exitosamente",
@@ -48,7 +60,18 @@ class FamiliaController{
         ))->json();
     }
 
-    public function getById($idFam){
+    public function getById($token){
+
+        if (!(new TokenAccess())->validateToken($token)){
+            return (new Response(
+                false,
+                "Sesion no encontrada",
+                404
+            ))->json();
+        }
+
+        $idFam = explode("|", $token)[1];
+
         $fam = (new FamiliaModel)->where("fam.idFam", "=", $idFam)->getFirst();
 
         if (!isset($fam)){
@@ -68,6 +91,62 @@ class FamiliaController{
             $fam
         );
         return $response->json();
+    }
+
+    public function registrarMiembroFamiliar(){
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+        $validate_keys = ValidateApp::keys_array_exist(
+            $JSON_DATA,
+            ['hash', 'idUsu']
+        );
+
+        if (!$validate_keys[0]){
+            return (new Response(
+                false, 
+                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+                400
+            ))->json();
+        }
+
+        if ((new ValidateApp())->isDuplicated("gruposfamiliares", "idUsu", $JSON_DATA['idUsu'])){
+            return (new Response(
+                false, 
+                "Su cédula ya se encuentra registrada en una Familia", 
+                400
+            ))->json();
+        }
+
+        $familia = (new FamiliaModel())->where("hashFam", "=", $JSON_DATA['hash'])->getFirst();
+        if (!isset($familia)){
+            return (new Response(
+                false, 
+                "codigo HASH no coincide con ninguna familia", 
+                404
+            ))->json();
+        }
+
+        $usuario = (new UsuarioModel())->where("idUsu", "=", $JSON_DATA['idUsu'])->getFirst();
+        if (!isset($usuario)){
+            return (new Response(
+                false, 
+                "Usuario no existe", 
+                404
+            ))->json();
+        }
+
+        $usuario->setStatusUsu(1);
+        $usuario->where("idUsu", "=", $JSON_DATA['idUsu'])->update();
+
+        $result = (new GruposFamiliaresModel())->insert([
+            'idUsu' => $JSON_DATA['idUsu'],
+            'idFam' => $familia->getIdFam()
+        ]);
+
+        return (new Response(
+            true, 
+            "Relacion familiar creada", 
+            201
+        ))->json();
     }
 }
 ?>

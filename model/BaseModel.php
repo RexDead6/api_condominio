@@ -65,9 +65,8 @@ class BaseModel{
             return $id;
 
         } catch (PDOException $error) {
-            
-            //Para solucionar el error de validación en el controller retornar $id = 0;
-            return $error->getMessage();
+            echo $error->getMessage();
+            return false;
         }
     }
 
@@ -88,7 +87,7 @@ class BaseModel{
 
             $affectedRows = $this->execute($obj);
 
-            return $affectedRows;
+            return $affectedRows > 0;
 
         } catch (PDOException $error) {
             

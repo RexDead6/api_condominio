@@ -1,10 +1,12 @@
 <?php
 require_once '../controller/FamiliaController.php';
+
+include '../util/ValidationToken.php';
+
 $METHOD = $_SERVER['REQUEST_METHOD'];
-$idFam = $_REQUEST['idFam'] ?? null;
 
 if ($METHOD == 'POST') Insert();
-if ($METHOD == 'GET' && $idFam) GetById($idFam);
+if ($METHOD == 'GET') GetById($token);
 
 function Insert(){
     $controller = new FamiliaController();

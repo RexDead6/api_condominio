@@ -9,6 +9,8 @@ if ($METHOD == 'GET' && $id) GetById($id);
 if ($METHOD == 'POST') Insert();
 
 function GetAll(){
+    include '../util/ValidationToken.php';
+    
     $controller = new UsuarioController();
     echo $controller->getAll();
 }

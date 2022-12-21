@@ -1,6 +1,7 @@
 <?php
 require_once '../model/UsuarioModel.php';
 require_once '../model/FamiliaModel.php';
+require_once '../model/TokenAccess.php';
 require_once '../util/Crypt.php';
 require_once '../util/Response.php';
 require_once '../util/ValidateApp.php';
@@ -8,7 +9,7 @@ require_once '../util/ValidateApp.php';
 class UsuarioController{
 
     public function registrarUsu(){
-        $JSON_DATA = json_decode(file_get_contents('php://input'), true);
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
             ['cedUsu', 'nomUsu', 'apeUsu', 'generoUsu', 'telUsu',  'claveUsu']
@@ -54,7 +55,7 @@ class UsuarioController{
     }
 
     public function Login(){
-        $JSON_DATA = json_decode(file_get_contents('php://input'), true);
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist($JSON_DATA, ['cedula', 'clave']);
         
         if (!$validate_keys[0]){
@@ -84,12 +85,17 @@ class UsuarioController{
         }
 
         $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
+        $fam = ($fam != null) ? $fam->getIdFam() : "00";
+
+        $token = $user->getIdUsu()."|".$fam."|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+
+        (new TokenAccess())->insert([
+            "idUsu" => $user->getIdUsu(),
+            "token" => $token
+        ]);
 
         $data_response = [
-            "id" => $user->getIdUsu(),
-            "idFam" => ($fam != null) ? $fam->getIdFam() : null,
-            "statusUsu" => $user->getStatusUsu(),
-            "Rol" => $user->getRol()
+            "token" => $token
         ];
 
         return (new Response(
@@ -97,6 +103,15 @@ class UsuarioController{
             "Usuario autenticado exitosamente",
             200,
             $data_response
+        ))->json();
+    }
+
+    public function logout($token){
+        (new TokenAccess())->where("token", "=", $token)->delete();
+        return (new Response(
+            true,
+            "Sesion cerrada",
+            200
         ))->json();
     }
 }
