@@ -93,11 +93,11 @@ class FamiliaController{
         return $response->json();
     }
 
-    public function registrarMiembroFamiliar(){
+    public function registrarMiembroFamiliar($token){
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['hash', 'idUsu']
+            ['hash']
         );
 
         if (!$validate_keys[0]){
@@ -108,10 +108,27 @@ class FamiliaController{
             ))->json();
         }
 
-        if ((new ValidateApp())->isDuplicated("gruposfamiliares", "idUsu", $JSON_DATA['idUsu'])){
+        if (!(new TokenAccess())->validateToken($token)){
+            return (new Response(
+                false,
+                "Sesion no encontrada",
+                404
+            ))->json();
+        }
+
+        if ((new ValidateApp())->isDuplicated("gruposfamiliares", "idUsu", explode("|", $token)[0])){
             return (new Response(
                 false, 
                 "Su cédula ya se encuentra registrada en una Familia", 
+                400
+            ))->json();
+        }
+
+        $idFam = explode("|", $token)[1];
+        if ($idFam != "00"){
+            return (new Response(
+                false, 
+                "Usted ya pertenece a una Familia", 
                 400
             ))->json();
         }
@@ -125,7 +142,7 @@ class FamiliaController{
             ))->json();
         }
 
-        $usuario = (new UsuarioModel())->where("idUsu", "=", $JSON_DATA['idUsu'])->getFirst();
+        $usuario = (new UsuarioModel())->where("idUsu", "=", explode("|", $token)[0])->getFirst();
         if (!isset($usuario)){
             return (new Response(
                 false, 
@@ -135,17 +152,33 @@ class FamiliaController{
         }
 
         $usuario->setStatusUsu(1);
-        $usuario->where("idUsu", "=", $JSON_DATA['idUsu'])->update();
+        $usuario->where("idUsu", "=", explode("|", $token)[0])->update();
 
         $result = (new GruposFamiliaresModel())->insert([
-            'idUsu' => $JSON_DATA['idUsu'],
+            'idUsu' => explode("|", $token)[0],
             'idFam' => $familia->getIdFam()
         ]);
+
+        $user = (new UsuarioModel())->where("idUsu", "=", explode("|", $token)[0])->getFirst();
+
+        (new TokenAccess())->where("token", "=", $token)->delete();
+
+        $token = $user->getIdUsu()."|".$familia->getIdFam()."|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+
+        (new TokenAccess())->insert([
+            "idUsu" => $user->getIdUsu(),
+            "token" => $token
+        ]);
+
+        $data_response = [
+            "token" => $token
+        ];
 
         return (new Response(
             true, 
             "Relacion familiar creada", 
-            201
+            201,
+            $data_response
         ))->json();
     }
 }

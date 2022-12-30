@@ -33,11 +33,23 @@ class UsuarioController{
 
         $JSON_DATA['claveUsu'] = Crypt::hash($JSON_DATA['claveUsu']);
 
-        (new UsuarioModel())->insert($JSON_DATA);
+        $id_usuario = (new UsuarioModel())->insert($JSON_DATA);
+        $user = (new UsuarioModel())->where("idUsu", "=", $id_usuario)->getFirst();
+        $token = $id_usuario."|00|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+
+        (new TokenAccess())->insert([
+            "idUsu" => $id_usuario,
+            "token" => $token
+        ]);
+
+        $data_response = [
+            "token" => $token
+        ];
         return (new Response(
             true, 
             "Usuario registrado exitosamente", 
-            201
+            201,
+            $data_response
         ))->json();
     }
     public function getAll(){

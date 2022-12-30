@@ -5,7 +5,7 @@ require_once '../util/Response.php';
 $token = $_REQUEST['token'] ?? null;
 
 if (!(new TokenAccess())->validateToken($token)){
-    echo (new Response(false, "Sin Autorización", 400))->json();
+    echo (new Response(false, "Sin Autorización", 401))->json();
     exit;
 }
 ?>
