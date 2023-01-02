@@ -1,5 +1,4 @@
 <?php
-use LDAP\Result;
 require_once '../model/FamiliaModel.php';
 require_once '../model/UsuarioModel.php';
 require_once '../model/GruposFamiliaresModel.php';

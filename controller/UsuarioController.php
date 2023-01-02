@@ -99,7 +99,7 @@ class UsuarioController{
         $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
         $fam = ($fam != null) ? $fam->getIdFam() : "00";
 
-        $token = $user->getIdUsu()."|".$fam."|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+        $token = $user->getIdUsu()."|".$fam."|".$user->getRol()->getNivelRol()."|".bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $user->getIdUsu(),
