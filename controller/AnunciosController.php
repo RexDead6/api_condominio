@@ -1,18 +1,13 @@
 <?php
 require_once '../model/AnunciosModel.php';
 require_once '../util/ValidateApp.php';
+require_once '../util/FileManager.php';
 class AnuncionController{
     public function insertAnuncio($token){
-        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
-        $validate_keys = ValidateApp::keys_array_exist(
-            $JSON_DATA,
-            ['descAnu']
-        );
-
-        if (!$validate_keys[0]){
+        if (!isset($_POST['descAnu'])){
             return (new Response(
                 false, 
-                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+                "Datos incompletos (descAnu)", 
                 400
             ))->json();
         }
@@ -25,20 +20,39 @@ class AnuncionController{
             ))->json();
         }
 
-        $result = (new AnunciosModel())->insert([
+        $desc = $_POST['descAnu'];
+        $path_image = "";
+
+        $idAnu = (new AnunciosModel())->insert([
             'idUsu'=> (int) explode("|", $token)[0],
-            'descAnu' => $JSON_DATA['descAnu']
+            'descAnu' => $desc,
         ]);
 
+        if (isset($_FILES['image'])){
+            $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            $path_image = "anuncios/{$idAnu}.{$extension}";
+            $resp = FileManager::uploadFile($_FILES['image'], "../".$path_image);
+            if (!$resp[0]){
+                return (new Response(
+                    false, 
+                    $resp[1], 
+                    400
+                ))->json();
+            }
+            $anuncio = (new AnunciosModel())->where("idAnu", "=", $idAnu)->getFirst();
+            $anuncio->setImage($path_image);
+            $anuncio->where("idAnu", "=", $idAnu)->update();
+        }
+
         return (new Response(
-            $result == false ? false:true, 
-            $result == false ? "No se ha podido registrar su anuncio, intente mas tarde": "Anuncio registrado", 
-            $result == false ? 500:201
+            true, 
+            "Anuncio registrado", 
+            201
         ))->json();
     }
 
     public function getAll(){
-        $anuncios = (new AnunciosModel())->inner("usuarios", "idUsu")->getAll();
+        $anuncios = (new AnunciosModel())->inner("usuarios", "idUsu")->inner("roles", "idRol", "usuarios")->orderBy("idAnu")->getAll();
         return (new Response(
             count($anuncios) > 0,
             count($anuncios) > 0 ? "Anuncios encontrados" : "No hay anuncios disponibles",

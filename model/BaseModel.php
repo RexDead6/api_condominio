@@ -10,6 +10,7 @@ class BaseModel{
     private $sql = null;
     private $wheres = "";
     private $inner = "";
+    private $order = "";
 
     public function __construct($table = null, $className = null){
 
@@ -23,7 +24,7 @@ class BaseModel{
         try {
 
             $tbl = substr($this->table, 0, 3);
-            $this->sql = "SELECT * FROM {$this->table} AS {$tbl} {$this->inner} {$this->wheres}";
+            $this->sql = "SELECT * FROM {$this->table} AS {$tbl} {$this->inner} {$this->wheres} {$this->order}";
 
             $query = $this->connection->prepare($this->sql);
             $query->execute();
@@ -142,6 +143,12 @@ class BaseModel{
         return $this;
     }
 
+    public function orderBy($colum, $type="DESC"){
+        $this->order = "ORDER BY {$colum} {$type}";
+
+        return $this;
+    }
+
     //Método para ejectuar una consulta
     private function execute($obj = null){
 
@@ -169,6 +176,8 @@ class BaseModel{
     private function resetValues(){
         
         $this->wheres = "";
+        $this->inner = "";
+        $this->order = "";
         $this->sql = null;
     }
 

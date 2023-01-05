@@ -9,6 +9,7 @@ class AnunciosModel extends GenericModel implements JsonSerializable{
     protected $idAnu;
     protected $Usuario;
     protected $descAnu;
+	protected $image;
     protected $fechaAnu;
 
     public function __construct($propiedades = null) {
@@ -87,6 +88,22 @@ class AnunciosModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setFechaAnu($fechaAnu): self {
 		$this->fechaAnu = $fechaAnu;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getImage() {
+		return $this->image;
+	}
+	
+	/**
+	 * @param mixed $image 
+	 * @return self
+	 */
+	public function setImage($image): self {
+		$this->image = $image;
 		return $this;
 	}
 }
