@@ -17,7 +17,7 @@ class PagoMovilController{
     }
 
     public function getAll($token){
-        $pmv = (new PagoMovilModel())->where("idUsu", "=", (new TokenAccess())->where("token", "=", $token)->getFirst()->getIdUsu())->getAll();
+        $pmv = (new PagoMovilModel())->inner("bancos", "idBan")->where("idUsu", "=", (new TokenAccess())->where("token", "=", $token)->getFirst()->getIdUsu())->getAll();
         return (new Response(
             count($pmv) > 0,
             count($pmv) > 0 ? "Bancos encontrados" : "No hay bancos disponibles",
