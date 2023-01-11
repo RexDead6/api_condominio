@@ -6,7 +6,7 @@ class PagoMovilModel extends GenericModel implements JsonSerializable{
     use JsonSerializeTrait;
 
     protected $idPmv;
-    protected $idUsu;
+    public $idUsu;
     protected $Banco;
     protected $status;
     protected $telPmv;
