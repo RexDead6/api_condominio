@@ -34,7 +34,7 @@ class AnuncionController{
             $resp = FileManager::uploadFile($_FILES['image'], "../".$path_image);
             if (!$resp[0]){
                 return (new Response(
-                    false, 
+                    false,
                     $resp[1], 
                     400
                 ))->json();
