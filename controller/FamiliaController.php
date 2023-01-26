@@ -59,6 +59,21 @@ class FamiliaController{
         ))->json();
     }
 
+    public function getAll($token){
+        $familias = (new FamiliaModel())->getAll();
+
+        foreach ($familias as $familia) {
+            $familia->setUsers((new UsuarioModel())->inner("gruposfamiliares", "idUsu")->inner("roles", "idRol")->where("gru.idFam", "=", $familia->getIdFam())->getAll());
+        }
+        
+        return (new Response(
+            count($familias) > 0,
+            count($familias) > 0 ? "Familias encontrados" : "No hay familias disponibles",
+            count($familias) > 0 ? 200 : 500,
+            $familias
+        ))->json();
+    }
+
     public function getById($token){
 
         if (!(new TokenAccess())->validateToken($token)){
