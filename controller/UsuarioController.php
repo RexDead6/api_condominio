@@ -62,6 +62,16 @@ class UsuarioController{
         return $response->json();
     }
 
+    public function getInactive(){
+        $response = new Response(
+            true, 
+            "Datos encontrados", 
+            200, 
+            (new UsuarioModel())->inner("roles", "idRol")->where("statusUsu", "=", 0)->getAll()
+        );
+        return $response->json();
+    }
+
     public function getOne($column = "idUsu", $value){
         $model = new UsuarioModel();
     }
