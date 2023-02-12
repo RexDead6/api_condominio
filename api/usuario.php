@@ -16,7 +16,8 @@ function GetAll(){
 }
 
 function GetById($id){
-    
+    $controller = new UsuarioController();
+    echo $controller->getById($id);
 }
 
 function Insert(){

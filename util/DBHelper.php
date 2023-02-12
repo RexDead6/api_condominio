@@ -1,7 +1,7 @@
 <?php 
 class DBHelper{
     private $connection;
-    private $host = '127.0.0.1';
+    private $host = 'localhost';
     private $user = 'root';
     private $pass = '';
     private $db = 'condominio';

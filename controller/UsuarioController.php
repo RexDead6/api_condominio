@@ -72,8 +72,14 @@ class UsuarioController{
         return $response->json();
     }
 
-    public function getOne($column = "idUsu", $value){
-        $model = new UsuarioModel();
+    public function getById($value, $column = "idUsu"){
+        $user = (new UsuarioModel())->inner("roles", "idRol")->where($column, "=", $value)->getFirst();
+        return (new Response(
+            isset($user),
+            isset($user) ? "Usuario encontrado" : "Usuario inexistente",
+            isset($user) ? 200 : 404,
+            $user
+        ))->json();
     }
 
     public function Login(){
