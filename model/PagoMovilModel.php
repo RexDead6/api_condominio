@@ -1,5 +1,7 @@
 <?php
 require_once '../model/GenericModel.php';
+require_once '../model/BaseModel.php';
+require_once '../model/BancosModel.php';
 require_once '../util/JsonSerialize.php';
 
 class PagoMovilModel extends GenericModel implements JsonSerializable{
@@ -14,6 +16,10 @@ class PagoMovilModel extends GenericModel implements JsonSerializable{
 
     public function __construct($propiedades = null){
         parent::__construct('pagomovil', PagoMovilModel::class, $propiedades);
+    }
+
+	public function set_value($name, $value){
+		$this->{$name} = $value;
     }
 
     public function __set($name, $value) {

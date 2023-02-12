@@ -158,7 +158,7 @@ class BaseModel{
             
             foreach($obj as $key => $value){
 
-                if(empty($value)){
+                if(empty($value) && $value != 0){
 
                     $value = null;
                 }
