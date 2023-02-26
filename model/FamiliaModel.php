@@ -15,6 +15,10 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
         parent::__construct('familias', FamiliaModel::class, $propiedades);
     }
 
+	public function set_value($name, $value){
+		$this->{$name} = $value;
+    }
+
 	/**
 	 * @return mixed
 	 */

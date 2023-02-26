@@ -12,9 +12,15 @@ class ServicioModel extends GenericModel implements JsonSerializable{
     protected $isMensualSer;
     protected $montoSer;
     protected $statusSer;
+	protected $fechaInicioServicio;
+	protected $mesesPorPagar;
 
     public function __construct($propiedades = null) {
         parent::__construct('servicios', ServicioModel::class, $propiedades);
+    }
+
+	public function set_value($name, $value){
+		$this->{$name} = $value;
     }
 
 	public function __set($name, $value){
@@ -121,6 +127,38 @@ class ServicioModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setStatusSer($statusSer): self {
 		$this->statusSer = $statusSer;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getFechaInicioServicio() {
+		return $this->fechaInicioServicio;
+	}
+	
+	/**
+	 * @param mixed $fechaInicioServicio 
+	 * @return self
+	 */
+	public function setFechaInicioServicio($fechaInicioServicio): self {
+		$this->fechaInicioServicio = $fechaInicioServicio;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMesesPorPagar() {
+		return $this->mesesPorPagar;
+	}
+	
+	/**
+	 * @param mixed $mesesPorPagar 
+	 * @return self
+	 */
+	public function setMesesPorPagar($mesesPorPagar): self {
+		$this->mesesPorPagar = $mesesPorPagar;
 		return $this;
 	}
 }
