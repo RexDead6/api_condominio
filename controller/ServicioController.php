@@ -79,5 +79,23 @@ class ServicioController{
             $newListServicios
         ))->json();
     }
+
+    public function getAllAdmin($token){
+        if (((int) explode("|", $token)[2]) != 1){
+            return (new Response(
+                false, 
+                "Permisos insuficientes", 
+                401
+            ))->json();
+        }
+
+        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->getAll();
+        return (new Response(
+            count($servicios) > 0,
+            count($servicios) > 0 ? "Servicios encontrados" : "No se han encontrado servicios",
+            count($servicios) > 0 ? 200:404,
+            $servicios
+        ))->json();
+    }
 }
 ?>
