@@ -7,6 +7,7 @@ $METHOD = $_SERVER['REQUEST_METHOD'];
 
 if ($METHOD == 'POST') Insert($token);
 if ($METHOD == 'GET') GetAll($token);
+if ($METHOD == 'PUT') update($token);
 
 function Insert($token){
     $controller = new PagoMovilController();
@@ -16,5 +17,10 @@ function Insert($token){
 function GetAll($token){
     $controller = new PagoMovilController();
     echo $controller->getall($token);
+}
+
+function update($token){
+    $controller = new PagoMovilController();
+    echo $controller->update($token);
 }
 ?>

@@ -61,5 +61,58 @@ class PagoMovilController{
                     )
                 )->json();
     }
+
+    public function update($token){
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $validate_keys = ValidateApp::keys_array_exist(
+            $JSON_DATA,
+            ['idPvm']
+        );
+
+        if (!$validate_keys[0]){
+            return (new Response(
+                false, 
+                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+                400
+            ))->json();
+        }
+
+        $usuario = (new UsuarioModel())->where("idUsu", "=", explode("|", $token)[0])->getFirst();
+        if (!isset($usuario)){
+            return (new Response(
+                false, 
+                "Usuario no existe", 
+                404
+            ))->json();
+        }
+
+        $pmv = (new PagoMovilModel())->where("idPmv", "=", $JSON_DATA['idPvm'])->getFirst();
+        if (!isset($pvm)){
+            return (new Response(
+                false, 
+                "Pago Movil no existe", 
+                404
+            ))->json();
+        }
+
+        if (isset($JSON_DATA['idBan'])){
+            $banco = (new BancosModel())->where("idBan", "=", $JSON_DATA['idBan'])->getFirst();
+            if (!isset($banco)){
+                return (new Response(
+                    false, 
+                    "Banco no encontrado",
+                    404
+                ))->json();
+            }
+            $pmv->idBan = $JSON_DATA['idBan'];
+        }
+
+        if (isset($JSON_DATA['status'])) $pmv->setStatus($JSON_DATA['status']);
+        if (isset($JSON_DATA['telPmv'])) $pvm->setTelPmv($JSON_DATA['telPmv']);
+        if (isset($JSON_DATA['cedPmv'])) $pvm->setCedPmv($JSON_DATA['cedPmv']);
+
+        $pmv->where("idPmv", "=", $JSON_DATA['idPvm'])->update();
+    }
 }
 ?>
