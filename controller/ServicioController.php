@@ -73,9 +73,9 @@ class ServicioController{
         }
 
         return (new Response(
-            true,
-            "Servicios encontrados",
-            200,
+            count($newListServicios) > 0,
+            count($newListServicios) > 0 ? "Servicios encontrados" : "Usted no posee deudas",
+            count($newListServicios) > 0? 200 : 404,
             $newListServicios
         ))->json();
     }
@@ -96,6 +96,10 @@ class ServicioController{
             count($servicios) > 0 ? 200:404,
             $servicios
         ))->json();
+    }
+
+    public function insertPayService($token, $idService){
+        
     }
 }
 ?>
