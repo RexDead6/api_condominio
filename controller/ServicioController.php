@@ -30,6 +30,15 @@ class ServicioController{
             ))->json();
         }
 
+        $pmv = (new PagoMovilModel())->where("idPmv", "=", $JSON_DATA['idPmv'])->getFirst();
+        if (!isset($pmv)){
+            return (new Response(
+                false, 
+                "Pago Movil no existe", 
+                404
+            ))->json();
+        }
+
         if ((new ValidateApp())->isDuplicated("servicios", "descSer", $JSON_DATA['descSer'])){
             return (new Response(
                 false, 
@@ -47,7 +56,7 @@ class ServicioController{
     }
 
     public function getAll($token){
-        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->getAll();
+        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->orderBy("idSer")->getAll();
         $newListServicios = [];
         $idFam = explode("|", $token)[1];
         foreach ($servicios as $servicio){
@@ -89,7 +98,7 @@ class ServicioController{
             ))->json();
         }
 
-        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->getAll();
+        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->orderBy("idSer")->getAll();
         return (new Response(
             count($servicios) > 0,
             count($servicios) > 0 ? "Servicios encontrados" : "No se han encontrado servicios",
