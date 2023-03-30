@@ -74,7 +74,7 @@ class ServicioController
         $newListServicios = [];
         $idFam = explode("|", $token)[1];
         foreach ($servicios as $servicio) {
-            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $idFam)->where("status", "=", 1)->getFirst();
+            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $idFam)->where("status", "<>", 0)->getFirst();
             if ($servicio->getIsMensualSer() == 0) {
                 if (isset($ultimaFac)) {
                     continue;
@@ -159,7 +159,7 @@ class ServicioController
 
         $MesesPorPagar = 1;
         $idFam = explode("|", $token)[1];
-        $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $idFam)->where("status", "=", 1)->getFirst();
+        $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", (int) $idFam)->where("status", "<>", 0)->getFirst();
         if ($servicio->getIsMensualSer() == 0) {
             if (isset($ultimaFac)) {
                 return (
