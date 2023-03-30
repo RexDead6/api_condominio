@@ -10,7 +10,7 @@ class FacturaModel extends GenericModel implements JsonSerializable{
     protected $Servicio;
     protected $Familia;
     protected $montoFac;
-    protected $fechapagoFac;
+    protected $fechapagFac;
 	protected $status;
 	protected $meses;
 
@@ -104,15 +104,15 @@ class FacturaModel extends GenericModel implements JsonSerializable{
 	 * @return mixed
 	 */
 	public function getFechapagoFac() {
-		return $this->fechapagoFac;
+		return $this->fechapagFac;
 	}
 	
 	/**
 	 * @param mixed $fechapagoFac 
 	 * @return self
 	 */
-	public function setFechapagoFac($fechapagoFac): self {
-		$this->fechapagoFac = $fechapagoFac;
+	public function setFechapagoFac($fechapagFac): self {
+		$this->fechapagFac = $fechapagFac;
 		return $this;
 	}
 

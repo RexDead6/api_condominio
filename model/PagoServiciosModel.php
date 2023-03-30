@@ -2,7 +2,7 @@
 require_once '../model/GenericModel.php';
 require_once '../util/JsonSerialize.php';
 
-class PagoServicios extends GenericModel implements JsonSerializable{
+class PagoServiciosModel extends GenericModel implements JsonSerializable{
     use JsonSerializeTrait;
 
     public $idFac;
@@ -12,7 +12,7 @@ class PagoServicios extends GenericModel implements JsonSerializable{
     protected $comprobantePag;
 
     public function __construct($propiedades = null) {
-        parent::__construct('pagoservicios', PagoServicios::class, $propiedades);
+        parent::__construct('pagoservicios', PagoServiciosModel::class, $propiedades);
     }
 
 	/**
