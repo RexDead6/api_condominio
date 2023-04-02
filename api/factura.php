@@ -8,4 +8,10 @@ if ($METHOD == 'POST'){
     $controller = new ServicioController();
     echo $controller->insertPayService($token);
 }
+
+if ($METHOD == 'GET') {
+    $status = $_GET['status'] ?? null;
+    $controller = new ServicioController();
+    echo $controller->getFacturas($token, $status);
+}
 ?>

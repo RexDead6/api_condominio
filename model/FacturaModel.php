@@ -13,6 +13,7 @@ class FacturaModel extends GenericModel implements JsonSerializable{
     protected $fechapagFac;
 	protected $status;
 	protected $meses;
+	protected $pagos;
 
     public function __construct($propiedades = null) {
         parent::__construct('factura', FacturaModel::class, $propiedades);
@@ -25,14 +26,12 @@ class FacturaModel extends GenericModel implements JsonSerializable{
             if (!isset($this->Servicio)){
                 $this->Servicio = new ServicioModel();
             }
-            if (isset($this->Servicio->$name)){
-                $this->Servicio->set_value($name, $value);
-            } else {
-                if (!isset($this->Familia)){
-                    $this->Familia = new FamiliaModel();
-                }
-                $this->Familia->set_value($name, $value);
+            $this->Servicio->set_value($name, $value);
+            
+			if (!isset($this->Familia)){
+                $this->Familia = new FamiliaModel();
             }
+            $this->Familia->set_value($name, $value);
         }
     }
 
@@ -145,6 +144,22 @@ class FacturaModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setMeses($meses): self {
 		$this->meses = $meses;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPagos() {
+		return $this->pagos;
+	}
+	
+	/**
+	 * @param mixed $pagos 
+	 * @return self
+	 */
+	public function setPagos($pagos): self {
+		$this->pagos = $pagos;
 		return $this;
 	}
 }

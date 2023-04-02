@@ -81,16 +81,18 @@ class ServicioController
                 }
                 $servicio->setMesesPorPagar(1);
             } else {
-                $date1 = $servicio->getFechaInicioServicio();
+                $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
+                $CurrentM = (int) date("m");
                 if (isset($ultimaFac)) {
-                    $date1 = $ultimaFac->getFechapagoFac();
-                    if (date("m", strtotime($date1)) === date("m")) {
+                    $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
+                    if ($lastM === $CurrentM) {
                         continue;
                     }
                 }
-                $date2 = date("Y-m-d");
+                /*$date2 = date("Y-m-d");
                 $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
-                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);
+                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);*/
+                $servicio->setMesesPorPagar($CurrentM - $lastM);
             }
             $newListServicios[] = $servicio;
         }
@@ -171,22 +173,24 @@ class ServicioController
                 )->json();
             }
         } else {
-            $date1 = $servicio->getFechaInicioServicio();
-            if (isset($ultimaFac)) {
-                $date1 = $ultimaFac->getFechapagoFac();
-                if (date("m", strtotime($date1)) === date("m")) {
-                    return (
-                        new Response(
-                        false,
-                        "Su Servicio mensual se encuentra al dia con el pago",
-                        400
-                        )
-                    )->json();
+            $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
+                $CurrentM = (int) date("m");
+                if (isset($ultimaFac)) {
+                    $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
+                    if ($lastM === $CurrentM) {
+                        return (
+                            new Response(
+                            false,
+                            "Su Servicio mensual se encuentra al dia con el pago",
+                            400
+                            )
+                        )->json();
+                    }
                 }
-            }
-            $date2 = date("Y-m-d");
-            $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
-            $MesesPorPagar = ((($timeRaw->y) * 12) + ($timeRaw->m)) + 1;
+                /*$date2 = date("Y-m-d");
+                $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
+                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);*/
+                $MesesPorPagar = ($CurrentM - $lastM);
         }
 
         $idFac = (new FacturaModel())->insert([
@@ -216,6 +220,115 @@ class ServicioController
             true,
             "Factura generada exitosamente",
             200
+            )
+        )->json();
+    }
+
+    public function getFacturas($token, $status){
+        $idFam = explode("|", $token)[1];
+        $facturas = (new FacturaModel())->inner("servicios", "idSer")->where("idFam", "=", (int) $idFam)->where("status", "=", $status)->getAll();
+
+        foreach ($facturas as $factura) {
+            $factura->setPagos((new PagoServiciosModel())->where("idFac", "=", $factura->getIdFac())->getAll());
+        }
+
+        return (
+            new Response(
+                count($facturas) > 0,
+                count($facturas) > 0 ? "Facturas encontradas" : "Facturas inexistentes",
+                count($facturas) > 0 ? 200 : 404,
+                $facturas
+            )
+        )->json();
+    }
+
+    public function getFacturasAdmin($token, $idSer, $status){
+
+        if (((int) explode("|", $token)[2]) != 1) {
+            return (
+                new Response(
+                false,
+                "Permisos insuficientes",
+                401
+                )
+            )->json();
+        }
+
+        if (!isset($idSer)){
+            return (
+                new Response(
+                false,
+                "idSer inexistente",
+                400
+                )
+            )->json();
+        }
+
+        $facturas = (new FacturaModel())->inner("servicios", "idSer")->inner("familias", "idFam")->where("fac.idSer", "=", (int) $idSer)->where("fac.status", "=", $status)->getAll();
+
+        foreach ($facturas as $factura) {
+            $factura->setPagos((new PagoServiciosModel())->where("idFac", "=", $factura->getIdFac())->getAll());
+        }
+
+        return (
+            new Response(
+                count($facturas) > 0,
+                count($facturas) > 0 ? "Facturas encontradas" : "Facturas inexistentes",
+                count($facturas) > 0 ? 200 : 404,
+                $facturas
+            )
+        )->json();
+    }
+
+    public function updateStatusFactura($token, $idFac, $status){
+        if (((int) explode("|", $token)[2]) != 1) {
+            return (
+                new Response(
+                false,
+                "Permisos insuficientes",
+                401
+                )
+            )->json();
+        }
+
+        if (!isset($idFac) || !isset($status)){
+            return (
+                new Response(
+                false,
+                "datos inexistentes",
+                400
+                )
+            )->json();
+        }
+
+        $factura = (new FacturaModel())->where("idFac", "=", $idFac)->getFirst();
+        if(!isset($factura)){
+            return (
+                new Response(
+                false,
+                "Factura inexistente",
+                404
+                )
+            )->json();
+        }
+
+        if ($factura->getStatus() != 2) {
+            return (
+                new Response(
+                false,
+                "Factura ya ha sido gestionada",
+                400
+                )
+            )->json();
+        }
+
+        $factura->setStatus($status);
+        $result = $factura->where("idFac", "=", $idFac)->update();
+        return (
+            new Response(
+                $result,
+                $result ? "Factura actualizada correctamente" : "No se ha podido actualizar su Factura, intente de nuevo",
+                $result ? 201:500
             )
         )->json();
     }
