@@ -1,0 +1,17 @@
+{
+    "name": "g-five/api_condominio_comp",
+    "autoload": {
+        "psr-4": {
+            "GFive\\ApiCondominioComp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Luis Alba",
+            "email": "luis17048@gmail.com"
+        }
+    ],
+    "require": {
+        "spipu/html2pdf": "^4.6"
+    }
+}
