@@ -1,3 +1,6 @@
 anuncios/*
 profile/*
+productos/*
 !profile/default.png
+!anuncios
+!productos

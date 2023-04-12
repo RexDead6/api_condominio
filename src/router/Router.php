@@ -7,6 +7,9 @@ require_once dirname( __DIR__ ) . '/controller/UsuarioController.php';
 require_once dirname( __DIR__ ) . '/controller/AnunciosController.php';
 require_once dirname( __DIR__ ) . '/controller/PagoMovilController.php';
 require_once dirname( __DIR__ ) . '/controller/NotificacionesController.php';
+require_once dirname( __DIR__ ) . '/controller/ProductoController.php';
+require_once dirname( __DIR__ ) . '/controller/ProveedorController.php';
+require_once dirname( __DIR__ ) . '/controller/CompraController.php';
 
 $app = new RouterHelper();
 
@@ -41,4 +44,15 @@ $app->post("factura", FacturaController::class, "insertFactura", true);
 $app->get("factura/:status", FacturaController::class, 'getFacturas', true);
 $app->get("facturaAdmin/:idSer/:status", FacturaController::class, 'getFacturasAdmin', true);
 $app->patch("facturaAdmin/:idFac/:status", FacturaController::class, 'updateStatus', true);
+
+$app->post("producto", ProductoController::class, "insert", true);
+$app->patch("producto/:idPro", ProductoController::class, "update", true);
+$app->get("producto", ProductoController::class, "getAll");
+$app->get("productoAdmin", ProductoController::class, "getAllAdmin", true);
+
+$app->post("proveedor", ProveedorController::class, "insert", true);
+$app->get("proveedor", ProveedorController::class, "getAll", true);
+
+$app->post("compra", CompraController::class, "insert", true);
+$app->get("compra", CompraController::class, "getAll", true);
 ?>
