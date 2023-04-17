@@ -19,6 +19,7 @@ $app->post("usuario", UsuarioController::class, "registrarUsu");
 $app->get("usuario", UsuarioController::class, "getAll");
 $app->get("usuario/:idUsu", UsuarioController::class, "getById");
 $app->get("usuarioInactivo", UsuarioController::class, "getInactive");
+$app->patch('usuario', UsuarioController::class, 'update', true);
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getById", true);
@@ -55,4 +56,6 @@ $app->get("proveedor", ProveedorController::class, "getAll", true);
 
 $app->post("compra", CompraController::class, "insert", true);
 $app->get("compra", CompraController::class, "getAll", true);
+
+$app->get("test", UsuarioController::class, "test");
 ?>

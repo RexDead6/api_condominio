@@ -1,9 +1,10 @@
 <?php
+require dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once 'router/Router.php';
 require_once 'util/Response.php';
 require_once 'model/TokenAccess.php';
 
-if (preg_match('/\.(?:png|jpg|jpeg|gif)$/', $_SERVER["REQUEST_URI"])) {
+if (preg_match('/\.(?:png|jpg|jpeg|gif|pdf)$/', $_SERVER["REQUEST_URI"])) {
     return false;
 }
 

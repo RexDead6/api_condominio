@@ -7,7 +7,7 @@ class TokenAccess extends GenericModel{
     protected $token;
     protected $fecha_registro;
     public function __construct($propiedades = null) {
-        parent::__construct('token_sessions', TokenAccess::class, $propiedades);
+        parent::__construct('token_access', TokenAccess::class, $propiedades);
     }
 
     public function validateToken($token){

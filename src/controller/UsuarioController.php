@@ -8,6 +8,52 @@ require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
 
 class UsuarioController{
 
+    public function test(){
+
+        $pdfManager = new PDFManager();
+        $pdfManager->template("venta.template.html", [
+            "ci" => "27863198",
+            "cliente" => "Luis Albarracin",
+            "n_factura" => "12",
+            "fecha_factura" => "fecha",
+            "rows"=> [
+                [
+                    "Producto1",
+                    "10",
+                    "10",
+                    "100"
+                ],
+                [
+                    "Producto2",
+                    "10",
+                    "10",
+                    "100"
+                ],
+                [
+                    "Producto3",
+                    "10",
+                    "10",
+                    "100"
+                ],
+                [
+                    "Producto4",
+                    "10",
+                    "10",
+                    "100"
+                ]
+            ],
+            "total"=> "400"
+        ]);
+
+        $pdfManager->output("venta_prueba.pdf");
+
+        return (new Response(
+            true, 
+            "Generado!", 
+            200
+        ))->json();
+    }
+
     public function registrarUsu(){
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
@@ -140,6 +186,29 @@ class UsuarioController{
             true,
             "Sesion cerrada",
             200
+        ))->json();
+    }
+
+    public function update($token){
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+        $user = (new UsuarioModel())->where('idUsu', '=', explode("|", $token)[0])->getFirst();
+        if (!isset($user)) {
+            return (new Response(
+                false,
+                "Usuario no existe",
+                404
+            ))->json();
+        }
+        if (isset($JSON_DATA['nomUsu'])) $user->setNomUsu($JSON_DATA['nomUsu']);
+        if (isset($JSON_DATA['apeUsu'])) $user->setApeUsu($JSON_DATA['apeUsu']);
+        if (isset($JSON_DATA['generoUsu'])) $user->setGeneroUsu($JSON_DATA['generoUsu']);
+        if (isset($JSON_DATA['telUsu'])) $user->setTelUsu($JSON_DATA['telUsu']);
+
+        $result = $user->where('idUsu', '=', explode("|", $token)[0])->update();
+        return (new Response(
+            $result,
+            $result ? "Usuario actualizado exitosamente" : "No se ha podido actualizado el usuario",
+            $result ? 200 : 500
         ))->json();
     }
 }

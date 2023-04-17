@@ -2,10 +2,12 @@
 require_once dirname( __DIR__ ) . '/model/ProductoModel.php';
 require_once dirname( __DIR__ ) . '/model/CompraModel.php';
 require_once dirname( __DIR__ ) . '/model/ProductosCompraModel.php';
+require_once dirname( __DIR__ ) . '/util/PDFManager.php';
 class CompraController{
 
     public function insert($token){
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+        $pdfData = [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
             ['idProv', 'monto', 'porcentaje', 'productosCompra']
@@ -16,6 +18,15 @@ class CompraController{
                 false, 
                 "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
                 400
+            ))->json();
+        }
+
+        $prov = (new ProveedorModel())->where("idProv", "=", $JSON_DATA['idProv'])->getFirst();
+        if (!isset($prov)) {
+            return (new Response(
+                false, 
+                "Proveedor inexistente", 
+                404
             ))->json();
         }
 
@@ -36,19 +47,42 @@ class CompraController{
             ))->json();
         }
 
+        $compra = (new CompraModel())->where("idCom", "=", $idCom)->getFirst();
+
+        $pdfData['rif'] = $prov->getRIF();
+        $pdfData['proveedor'] = $prov->getNomProv();
+        $pdfData['n_factura'] = $idCom;
+        $pdfData['fecha_factura'] = $compra->getFecha_compra();
+        $pdfData['rows'] = [];
+        $pdfData['total'] = 0;
+
         foreach ($JSON_DATA['productosCompra'] as $producto) {
+
+            $pro = (new ProductoModel())->where("idPro", "=", $producto['producto']['idPro'])->getFirst();
+            if (!isset($pro)){
+                continue;
+            }
+
             (new ProductosCompraModel())->insert([
                 "idPro"=>$producto['producto']['idPro'],
                 "idCom"=>$idCom,
                 "cantidad"=>$producto['cantidad'],
                 "costo"=>$producto['costo']
             ]);
+
+            $pdfData['rows'][] = [$pro->getNomPro(), $producto['cantidad'], $producto['costo'], $producto['cantidad'] * $producto['costo']];
+            $pdfData['total'] += $producto['cantidad'] * $producto['costo'];
+
             $costo_venta = $producto['costo'] + (($JSON_DATA['porcentaje'] / 100) * $producto['costo']);
             $proModel = (new ProductoModel())->where("idPro", "=", $producto['producto']['idPro'])->getFirst();
             $proModel->setCostoPro($costo_venta);
             $proModel->setExistPro($producto['cantidad'] + $proModel->getExistPro());
             $proModel->where("idPro", "=", $producto['producto']['idPro'])->update();
         }
+
+        $pdfManager = new PDFManager();
+        $pdfManager->template("compra.template.html", $pdfData);
+        $pdfManager->output("compra_$idCom.pdf");
 
         return (new Response(
             true, 
@@ -58,7 +92,7 @@ class CompraController{
     }
 
     public function getAll($token){
-        $compras = (new CompraModel())->where("idUsu", "=", explode("|", $token)[0])->getAll();
+        $compras = (new CompraModel())->inner("proveedor", "idProv")->where("com.idUsu", "=", explode("|", $token)[0])->orderBy("idCom")->getAll();
         foreach ($compras as $compra) {
             $compra->setProductos((new ProductosCompraModel())->inner("producto", "idPro")->where("idCom", "=", $compra->getIdCom())->getAll());
         }
