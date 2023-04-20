@@ -31,7 +31,7 @@ class AnunciosController{
         if (isset($_FILES['image'])){
             $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
             $path_image = "anuncios/{$idAnu}.{$extension}";
-            $resp = FileManager::uploadFile($_FILES['image'], "../".$path_image);
+            $resp = FileManager::uploadFile($_FILES['image'], str_replace("\\", "/", dirname( __DIR__ ))."/assets/".$path_image);
             if (!$resp[0]){
                 return (new Response(
                     false,

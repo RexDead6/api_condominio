@@ -1,8 +1,9 @@
 <?php
 require_once dirname( __DIR__ ) . '/model/GenericModel.php';
+require_once dirname( __DIR__ ) . '/model/ProductoModel.php';
 require_once dirname( __DIR__ ) . '/util/JsonSerialize.php';
 
-class ProductosCompraModel extends GenericModel implements JsonSerializable {
+class ProductoVentaModel extends GenericModel implements JsonSerializable {
     use JsonSerializeTrait;
 
     protected $producto;
@@ -10,7 +11,7 @@ class ProductosCompraModel extends GenericModel implements JsonSerializable {
     protected $costo;
 
     public function __construct($propiedades = null) {
-        parent::__construct('compraproductos', ProductosCompraModel::class, $propiedades);
+        parent::__construct('ventaproductos', ProductoVentaModel::class, $propiedades);
     }
 
     public function set_value($name, $value){

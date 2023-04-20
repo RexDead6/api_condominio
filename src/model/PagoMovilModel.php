@@ -13,6 +13,7 @@ class PagoMovilModel extends GenericModel implements JsonSerializable{
     protected $status;
     protected $telPmv;
     protected $cedPmv;
+	protected $venta;
 
     public function __construct($propiedades = null){
         parent::__construct('pagomovil', PagoMovilModel::class, $propiedades);
@@ -126,6 +127,22 @@ class PagoMovilModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setCedPmv($cedPmv): self {
 		$this->cedPmv = $cedPmv;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getVenta() {
+		return $this->venta;
+	}
+	
+	/**
+	 * @param mixed $venta 
+	 * @return self
+	 */
+	public function setVenta($venta): self {
+		$this->venta = $venta;
 		return $this;
 	}
 }

@@ -11,7 +11,7 @@ class PagoMovilController{
         return (new Response(
             count($bancos) > 0,
             count($bancos) > 0 ? "Bancos encontrados" : "No hay bancos disponibles",
-            count($bancos) > 0 ? 200 : 500,
+            count($bancos) > 0 ? 200 : 404,
             $bancos
         ))->json();
     }
@@ -21,8 +21,36 @@ class PagoMovilController{
         return (new Response(
             count($pmv) > 0,
             count($pmv) > 0 ? "Bancos encontrados" : "No hay bancos disponibles",
-            count($pmv) > 0 ? 200 : 500,
+            count($pmv) > 0 ? 200 : 404,
             $pmv
+        ))->json();
+    }
+
+    public function getVenta($idUsu){
+        $pmv = (new PagoMovilModel())->inner("bancos", "idBan")->where("idUsu", "=", $idUsu)->where("venta", "=", 1)->getFirst();
+        return (new Response(
+            isset($pmv),
+            isset($pmv) ? "Pago Movil encontrado" : "No hay pago movil disponible",
+            isset($pmv) ? 200 : 404,
+            $pmv
+        ))->json();
+    }
+
+    public function updateVenta($token, $idPmv){
+        $pmv = (new PagoMovilModel())->where("idUsu", "=", explode("|", $token)[0])->where("venta", "=", 1)->getFirst();
+        if (isset($pmv)){
+            $pmv->setVenta(0);
+            $pmv->where("idPmv", "=", $pmv->getIdPmv())->update();
+        }
+
+        $pmv = (new PagoMovilModel())->where("idPmv", "=", $idPmv)->getFirst();
+        $pmv->setVenta(1);
+        $resp = $pmv->where("idPmv", "=", $pmv->getIdPmv())->update();
+
+        return (new Response(
+            $resp,
+            $resp ? "Pago Movil Actualizado" : "No ha podido actializar el pago movil",
+            $resp ? 201 : 500
         ))->json();
     }
 

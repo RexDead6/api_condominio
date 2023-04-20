@@ -3,6 +3,7 @@ require_once dirname( __DIR__ ) . '/model/ProductoModel.php';
 require_once dirname( __DIR__ ) . '/model/CompraModel.php';
 require_once dirname( __DIR__ ) . '/model/ProductosCompraModel.php';
 require_once dirname( __DIR__ ) . '/util/PDFManager.php';
+require_once dirname( __DIR__ ) . '/util/Formating.php';
 class CompraController{
 
     public function insert($token){
@@ -70,7 +71,7 @@ class CompraController{
                 "costo"=>$producto['costo']
             ]);
 
-            $pdfData['rows'][] = [$pro->getNomPro(), $producto['cantidad'], $producto['costo'], $producto['cantidad'] * $producto['costo']];
+            $pdfData['rows'][] = [$pro->getNomPro(), $producto['cantidad'], Formating::numberFormat($producto['costo']), Formating::numberFormat($producto['cantidad'] * $producto['costo'])];
             $pdfData['total'] += $producto['cantidad'] * $producto['costo'];
 
             $costo_venta = $producto['costo'] + (($JSON_DATA['porcentaje'] / 100) * $producto['costo']);
@@ -79,6 +80,7 @@ class CompraController{
             $proModel->setExistPro($producto['cantidad'] + $proModel->getExistPro());
             $proModel->where("idPro", "=", $producto['producto']['idPro'])->update();
         }
+        $pdfData['total'] = Formating::numberFormat($pdfData['total']);
 
         $pdfManager = new PDFManager();
         $pdfManager->template("compra.template.html", $pdfData);

@@ -10,6 +10,7 @@ require_once dirname( __DIR__ ) . '/controller/NotificacionesController.php';
 require_once dirname( __DIR__ ) . '/controller/ProductoController.php';
 require_once dirname( __DIR__ ) . '/controller/ProveedorController.php';
 require_once dirname( __DIR__ ) . '/controller/CompraController.php';
+require_once dirname( __DIR__ ) . '/controller/VentaController.php';
 
 $app = new RouterHelper();
 
@@ -35,7 +36,9 @@ $app->get("bancos", PagoMovilController::class, "getBancos");
 
 $app->post("pagoMovil", PagoMovilController::class, "insertPagoMovil", true);
 $app->get("pagoMovil", PagoMovilController::class, "getall", true);
+$app->get("pagoMovil/:idUsu", PagoMovilController::class, "getVenta");
 $app->patch("pagoMovil", PagoMovilController::class, "update", true);
+$app->patch("pagoMovilVenta/:idPvm", PagoMovilController::class, "updateVenta", true);
 
 $app->post("servicio", ServicioController::class, "insert", true);
 $app->get("servicio", ServicioController::class, "getAll", true);
@@ -56,6 +59,11 @@ $app->get("proveedor", ProveedorController::class, "getAll", true);
 
 $app->post("compra", CompraController::class, "insert", true);
 $app->get("compra", CompraController::class, "getAll", true);
+
+$app->get("ventaUsuarios", VentaController::class, "getUsersProducts", true);
+$app->post("venta", VentaController::class, "insert", true);
+$app->get("venta/:type/:status", VentaController::class, "getAll", true);
+$app->patch("venta/:idVen/:status", VentaController::class, "updateStatus", true);
 
 $app->get("test", UsuarioController::class, "test");
 ?>

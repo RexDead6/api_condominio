@@ -3,7 +3,10 @@ require_once dirname( __DIR__ ) . '/util/Response.php';
 require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
 require_once dirname( __DIR__ ) . '/model/TokenAccess.php';
 require_once dirname( __DIR__ ) . '/model/FacturaModel.php';
+require_once dirname( __DIR__ ) . '/model/FamiliaModel.php';
 require_once dirname( __DIR__ ) . '/model/PagoServiciosModel.php';
+require_once dirname( __DIR__ ) . '/util/PDFManager.php';
+require_once dirname( __DIR__ ) . '/util/Formating.php';
 
 class FacturaController{
     public function insertFactura($token){
@@ -36,6 +39,7 @@ class FacturaController{
 
         $MesesPorPagar = 1;
         $idFam = explode("|", $token)[1];
+        $fam = (new FamiliaModel())->where("idFam", "=", $idFam)->getFirst();
         $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", (int) $idFam)->where("status", "<>", 0)->getFirst();
         if ($servicio->getIsMensualSer() == 0) {
             if (isset($ultimaFac)) {
@@ -89,6 +93,22 @@ class FacturaController{
             $pago['idFac'] = $idFac;
             (new PagoServiciosModel())->insert($pago);
         }
+
+        $fac = (new FacturaModel())->where("idFac", "=", $idFac)->getFirst();
+
+        $pdfManager = new PDFManager();
+        $pdfManager->template("servicio.template.html", [
+            "familia"=>$fam->getDescFam(),
+            "n_factura"=>$idFac,
+            "fecha_factura"=>$fac->getFechapagoFac(),
+            "rows"=>[
+                [
+                    $servicio->getDescSer(), Formating::numberFormat($servicio->getMontoSer()), $MesesPorPagar, Formating::numberFormat($servicio->getMontoSer() * $MesesPorPagar)
+                ]
+            ],
+            "total"=>Formating::numberFormat($servicio->getMontoSer() * $MesesPorPagar)
+        ]);
+        $pdfManager->output("servicio_$idFac.pdf");
 
         return (
             new Response(
