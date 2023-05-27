@@ -1,16 +1,16 @@
 <?php
-require_once dirname( __DIR__ ) . '/util/RouterHelper.php';
-require_once dirname( __DIR__ ) . '/controller/FamiliaController.php';
-require_once dirname( __DIR__ ) . '/controller/ServicioController.php';
-require_once dirname( __DIR__ ) . '/controller/FacturaController.php';
-require_once dirname( __DIR__ ) . '/controller/UsuarioController.php';
-require_once dirname( __DIR__ ) . '/controller/AnunciosController.php';
-require_once dirname( __DIR__ ) . '/controller/PagoMovilController.php';
-require_once dirname( __DIR__ ) . '/controller/NotificacionesController.php';
-require_once dirname( __DIR__ ) . '/controller/ProductoController.php';
-require_once dirname( __DIR__ ) . '/controller/ProveedorController.php';
-require_once dirname( __DIR__ ) . '/controller/CompraController.php';
-require_once dirname( __DIR__ ) . '/controller/VentaController.php';
+require_once dirname(__DIR__) . '/util/RouterHelper.php';
+require_once dirname(__DIR__) . '/controller/FamiliaController.php';
+require_once dirname(__DIR__) . '/controller/ServicioController.php';
+require_once dirname(__DIR__) . '/controller/FacturaController.php';
+require_once dirname(__DIR__) . '/controller/UsuarioController.php';
+require_once dirname(__DIR__) . '/controller/AnunciosController.php';
+require_once dirname(__DIR__) . '/controller/PagoMovilController.php';
+require_once dirname(__DIR__) . '/controller/NotificacionesController.php';
+require_once dirname(__DIR__) . '/controller/ProductoController.php';
+require_once dirname(__DIR__) . '/controller/ProveedorController.php';
+require_once dirname(__DIR__) . '/controller/CompraController.php';
+require_once dirname(__DIR__) . '/controller/VentaController.php';
 
 $app = new RouterHelper();
 
@@ -21,6 +21,7 @@ $app->get("usuario", UsuarioController::class, "getAll");
 $app->get("usuario/:idUsu", UsuarioController::class, "getById");
 $app->get("usuarioInactivo", UsuarioController::class, "getInactive");
 $app->patch('usuario', UsuarioController::class, 'update', true);
+$app->post("usuario/image", UsuarioController::class, 'update_image', true);
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getById", true);

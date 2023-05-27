@@ -248,5 +248,44 @@ class UsuarioController
             )
         )->json();
     }
+
+    public function update_image($token)
+    {
+        if (!isset($_FILES['img'])) {
+            return (
+                new Response(
+                false,
+                "Debe enviar la imagen del usuario",
+                400
+                )
+            )->json();
+        }
+
+        $user = (new UsuarioModel())->where("idUsu", "=", explode("|", $token)[0])->getFirst();
+
+        $extension = strtolower(pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION));
+        $path_image = "profile/{$user->getIdUsu()}.{$extension}";
+        $resp = FileManager::uploadFile($_FILES['img'], str_replace("\\", "/", dirname(__DIR__)) . "/assets/" . $path_image);
+        if (!$resp[0]) {
+            return (
+                new Response(
+                false,
+                    $resp[1],
+                400
+                )
+            )->json();
+        }
+
+        $user->setImgUsu($path_image);
+        $success = $user->where("idUsu", "=", explode("|", $token)[0])->update();
+
+        return (
+            new Response(
+            $success,
+            $success ? "Imagen Actualizada" : "No se ha podido actualizar su imagen",
+            $success ? 200 : 500
+            )
+        )->json();
+    }
 }
 ?>
