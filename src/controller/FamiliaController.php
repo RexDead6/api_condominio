@@ -54,6 +54,9 @@ class FamiliaController{
         }
 
         $user->setStatusUsu(1);
+
+        
+        $user->idRol = 3;
         $user->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->update();
         $result = (new GruposFamiliaresModel())->insert([
             "idUsu" => $JSON_DATA['idJefeUsu'],

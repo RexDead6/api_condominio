@@ -7,6 +7,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 	use JsonSerializeTrait;
     protected $idUsu;
     protected $Rol;
+	public $idRol;
     protected $statusUsu;
     protected $cedUsu;
     protected $nomUsu;

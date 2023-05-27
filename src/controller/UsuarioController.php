@@ -1,14 +1,16 @@
 <?php
-require_once dirname( __DIR__ ) . '/model/UsuarioModel.php';
-require_once dirname( __DIR__ ) . '/model/FamiliaModel.php';
-require_once dirname( __DIR__ ) . '/model/TokenAccess.php';
-require_once dirname( __DIR__ ) . '/util/Crypt.php';
-require_once dirname( __DIR__ ) . '/util/Response.php';
-require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
+require_once dirname(__DIR__) . '/model/UsuarioModel.php';
+require_once dirname(__DIR__) . '/model/FamiliaModel.php';
+require_once dirname(__DIR__) . '/model/TokenAccess.php';
+require_once dirname(__DIR__) . '/util/Crypt.php';
+require_once dirname(__DIR__) . '/util/Response.php';
+require_once dirname(__DIR__) . '/util/ValidateApp.php';
 
-class UsuarioController{
+class UsuarioController
+{
 
-    public function test(){
+    public function test()
+    {
 
         $pdfManager = new PDFManager();
         $pdfManager->template("venta.template.html", [
@@ -16,7 +18,7 @@ class UsuarioController{
             "cliente" => "Luis Albarracin",
             "n_factura" => "12",
             "fecha_factura" => "fecha",
-            "rows"=> [
+            "rows" => [
                 [
                     "Producto1",
                     "10",
@@ -42,46 +44,53 @@ class UsuarioController{
                     "100"
                 ]
             ],
-            "total"=> "400"
+            "total" => "400"
         ]);
 
         $pdfManager->output("venta_prueba.pdf");
 
-        return (new Response(
-            true, 
-            "Generado!", 
+        return (
+            new Response(
+            true,
+            "Generado!",
             200
-        ))->json();
+            )
+        )->json();
     }
 
-    public function registrarUsu(){
+    public function registrarUsu()
+    {
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['cedUsu', 'nomUsu', 'apeUsu', 'generoUsu', 'telUsu',  'claveUsu']
+            ['cedUsu', 'nomUsu', 'apeUsu', 'generoUsu', 'telUsu', 'claveUsu']
         );
 
-        if (!$validate_keys[0]){
-            return (new Response(
-                false, 
-                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+        if (!$validate_keys[0]) {
+            return (
+                new Response(
+                false,
+                "Datos incompletos (" . implode(", ", $validate_keys[1]) . ")",
                 400
-            ))->json();
+                )
+            )->json();
         }
 
-        if ((new ValidateApp())->isDuplicated("usuarios", "cedUsu", $JSON_DATA['cedUsu'])){
-            return (new Response(
-                false, 
-                "Su cédula ya se encuentra registrada", 
+        if ((new ValidateApp())->isDuplicated("usuarios", "cedUsu", $JSON_DATA['cedUsu'])) {
+            return (
+                new Response(
+                false,
+                "Su cédula ya se encuentra registrada",
                 400
-            ))->json();
+                )
+            )->json();
         }
 
         $JSON_DATA['claveUsu'] = Crypt::hash($JSON_DATA['claveUsu']);
 
         $id_usuario = (new UsuarioModel())->insert($JSON_DATA);
-        $user = (new UsuarioModel())->where("idUsu", "=", $id_usuario)->getFirst();
-        $token = $id_usuario."|00|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+        $user = (new UsuarioModel())->where("idUsu", "=", $id_usuario)->inner("roles", 'idRol')->getFirst();
+        $token = $id_usuario . "|00|" . $user->getRol()->getIdRol() . "|" . bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $id_usuario,
@@ -91,77 +100,91 @@ class UsuarioController{
         $data_response = [
             "token" => $token
         ];
-        return (new Response(
-            true, 
-            "Usuario registrado exitosamente", 
+        return (
+            new Response(
+            true,
+            "Usuario registrado exitosamente",
             201,
             $data_response
-        ))->json();
+            )
+        )->json();
     }
-    public function getAll(){
+    public function getAll()
+    {
         $response = new Response(
-            true, 
-            "Datos encontrados", 
-            200, 
+            true,
+            "Datos encontrados",
+            200,
             (new UsuarioModel())->inner("roles", "idRol")->getAll()
         );
         return $response->json();
     }
 
-    public function getInactive(){
+    public function getInactive()
+    {
         $response = new Response(
-            true, 
-            "Datos encontrados", 
-            200, 
+            true,
+            "Datos encontrados",
+            200,
             (new UsuarioModel())->inner("roles", "idRol")->where("statusUsu", "=", 0)->getAll()
         );
         return $response->json();
     }
 
-    public function getById($value, $column = "idUsu"){
+    public function getById($value, $column = "idUsu")
+    {
         $user = (new UsuarioModel())->inner("roles", "idRol")->where($column, "=", $value)->getFirst();
-        return (new Response(
+        return (
+            new Response(
             isset($user),
             isset($user) ? "Usuario encontrado" : "Usuario inexistente",
             isset($user) ? 200 : 404,
             $user
-        ))->json();
+            )
+        )->json();
     }
 
-    public function Login(){
+    public function Login()
+    {
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist($JSON_DATA, ['cedula', 'clave']);
-        
-        if (!$validate_keys[0]){
-            return (new Response(
-                false, 
-                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+
+        if (!$validate_keys[0]) {
+            return (
+                new Response(
+                false,
+                "Datos incompletos (" . implode(", ", $validate_keys[1]) . ")",
                 400
-            ))->json();
+                )
+            )->json();
         }
 
         $user = (new UsuarioModel())->inner("roles", "idRol")->where("cedUsu", "=", $JSON_DATA['cedula'])->getFirst();
 
-        if (!isset($user)){
-            return (new Response(
+        if (!isset($user)) {
+            return (
+                new Response(
                 false,
                 "Esta Cédula no se encuentra registrada",
                 404
-            ))->json();
+                )
+            )->json();
         }
 
-        if (!Crypt::verify($JSON_DATA['clave'], $user->getClaveUsu())){
-            return (new Response(
+        if (!Crypt::verify($JSON_DATA['clave'], $user->getClaveUsu())) {
+            return (
+                new Response(
                 false,
                 "Clave de usuario incorrecta",
                 400
-            ))->json();
+                )
+            )->json();
         }
 
         $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
         $fam = ($fam != null) ? $fam->getIdFam() : "00";
 
-        $token = $user->getIdUsu()."|".$fam."|".$user->getRol()->getNivelRol()."|".bin2hex(random_bytes(50));
+        $token = $user->getIdUsu() . "|" . $fam . "|" . $user->getRol()->getNivelRol() . "|" . bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $user->getIdUsu(),
@@ -172,44 +195,58 @@ class UsuarioController{
             "token" => $token
         ];
 
-        return (new Response(
+        return (
+            new Response(
             true,
             "Usuario autenticado exitosamente",
             200,
             $data_response
-        ))->json();
+            )
+        )->json();
     }
 
-    public function logout($token){
+    public function logout($token)
+    {
         (new TokenAccess())->where("token", "=", $token)->delete();
-        return (new Response(
+        return (
+            new Response(
             true,
             "Sesion cerrada",
             200
-        ))->json();
+            )
+        )->json();
     }
 
-    public function update($token){
+    public function update($token)
+    {
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $user = (new UsuarioModel())->where('idUsu', '=', explode("|", $token)[0])->getFirst();
         if (!isset($user)) {
-            return (new Response(
+            return (
+                new Response(
                 false,
                 "Usuario no existe",
                 404
-            ))->json();
+                )
+            )->json();
         }
-        if (isset($JSON_DATA['nomUsu'])) $user->setNomUsu($JSON_DATA['nomUsu']);
-        if (isset($JSON_DATA['apeUsu'])) $user->setApeUsu($JSON_DATA['apeUsu']);
-        if (isset($JSON_DATA['generoUsu'])) $user->setGeneroUsu($JSON_DATA['generoUsu']);
-        if (isset($JSON_DATA['telUsu'])) $user->setTelUsu($JSON_DATA['telUsu']);
+        if (isset($JSON_DATA['nomUsu']))
+            $user->setNomUsu($JSON_DATA['nomUsu']);
+        if (isset($JSON_DATA['apeUsu']))
+            $user->setApeUsu($JSON_DATA['apeUsu']);
+        if (isset($JSON_DATA['generoUsu']))
+            $user->setGeneroUsu($JSON_DATA['generoUsu']);
+        if (isset($JSON_DATA['telUsu']))
+            $user->setTelUsu($JSON_DATA['telUsu']);
 
         $result = $user->where('idUsu', '=', explode("|", $token)[0])->update();
-        return (new Response(
+        return (
+            new Response(
             $result,
             $result ? "Usuario actualizado exitosamente" : "No se ha podido actualizado el usuario",
             $result ? 200 : 500
-        ))->json();
+            )
+        )->json();
     }
 }
 ?>
