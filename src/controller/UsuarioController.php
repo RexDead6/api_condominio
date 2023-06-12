@@ -11,48 +11,10 @@ class UsuarioController
 
     public function test()
     {
-
-        $pdfManager = new PDFManager();
-        $pdfManager->template("venta.template.html", [
-            "ci" => "27863198",
-            "cliente" => "Luis Albarracin",
-            "n_factura" => "12",
-            "fecha_factura" => "fecha",
-            "rows" => [
-                [
-                    "Producto1",
-                    "10",
-                    "10",
-                    "100"
-                ],
-                [
-                    "Producto2",
-                    "10",
-                    "10",
-                    "100"
-                ],
-                [
-                    "Producto3",
-                    "10",
-                    "10",
-                    "100"
-                ],
-                [
-                    "Producto4",
-                    "10",
-                    "10",
-                    "100"
-                ]
-            ],
-            "total" => "400"
-        ]);
-
-        $pdfManager->output("venta_prueba.pdf");
-
         return (
             new Response(
             true,
-            "Generado!",
+            "API FUNCIONANDO",
             200
             )
         )->json();
@@ -181,10 +143,10 @@ class UsuarioController
             )->json();
         }
 
-        $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
-        $fam = ($fam != null) ? $fam->getIdFam() : "00";
+        $fam = (new FamiliaModel())->inner("gruposfamiliares", "idFam")->inner("usuarios", "idUsu")->where("gru.idUsu", "=", $user->getIdUsu())->getFirst();
+        $tokenfam = ($fam != null) ? $fam->getIdFam() : "00";
 
-        $token = $user->getIdUsu() . "|" . $fam . "|" . $user->getRol()->getNivelRol() . "|" . bin2hex(random_bytes(50));
+        $token = $user->getIdUsu() . "|" . $tokenfam . "|" . $user->getRol()->getNivelRol() . "|" . bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $user->getIdUsu(),
@@ -192,7 +154,8 @@ class UsuarioController
         ]);
 
         $data_response = [
-            "token" => $token
+            "token" => $token,
+            "isJefe" => $fam->getJefeFamilia()->getIdUsu() == $user->getIdUsu()
         ];
 
         return (

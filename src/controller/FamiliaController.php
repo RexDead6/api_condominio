@@ -42,7 +42,8 @@ class FamiliaController{
         $idFam = (new FamiliaModel())->insert([
             "descFam"=>$JSON_DATA['descFam'], 
             "direccion"=>$JSON_DATA['direccion'],
-            "hashFam" => bin2hex(random_bytes(20))
+            "hashFam" => bin2hex(random_bytes(20)),
+            "idUsu" => $JSON_DATA['idJefeUsu']
         ]);
 
         if ($idFam == false){
@@ -54,10 +55,8 @@ class FamiliaController{
         }
 
         $user->setStatusUsu(1);
-
-        
-        $user->idRol = 3;
         $user->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->update();
+
         $result = (new GruposFamiliaresModel())->insert([
             "idUsu" => $JSON_DATA['idJefeUsu'],
             "idFam" => $idFam
@@ -71,7 +70,7 @@ class FamiliaController{
     }
 
     public function getAll($token){
-        $familias = (new FamiliaModel())->getAll();
+        $familias = (new FamiliaModel())->inner("usuarios", "idUsu")->getAll();
 
         foreach ($familias as $familia) {
             $familia->setUsers((new UsuarioModel())->inner("gruposfamiliares", "idUsu")->inner("roles", "idRol")->where("gru.idFam", "=", $familia->getIdFam())->getAll());
@@ -85,7 +84,7 @@ class FamiliaController{
         ))->json();
     }
 
-    public function getById($token){
+    public function getByToken($token){
 
         if (!(new TokenAccess())->validateToken($token)){
             return (new Response(
@@ -97,7 +96,7 @@ class FamiliaController{
 
         $idFam = explode("|", $token)[1];
 
-        $fam = (new FamiliaModel)->where("fam.idFam", "=", $idFam)->getFirst();
+        $fam = (new FamiliaModel)->inner("usuarios", "idUsu")->where("fam.idFam", "=", $idFam)->getFirst();
 
         if (!isset($fam)){
             return (new Response(

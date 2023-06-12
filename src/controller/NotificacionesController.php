@@ -9,7 +9,7 @@ class NotificacionesController{
         return (new Response(
             true,
             "Notificaciones",
-            200,
+            400,
             [
                 "all"=>$not_all,
                 "user"=>$not_user
