@@ -26,6 +26,7 @@ $app->post("usuario/image", UsuarioController::class, 'update_image', true);
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
 $app->get("familias", FamiliaController::class, "getAll", true);
+$app->patch("familia", FamiliaController::class, "editarJefeFamiliar", true);
 $app->post("relacionFamilia", FamiliaController::class, "registrarMiembroFamiliar", true);
 
 $app->post("anuncios", AnunciosController::class, "insertAnuncio", true);

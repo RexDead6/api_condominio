@@ -205,5 +205,56 @@ class FamiliaController{
             $data_response
         ))->json();
     }
+
+    public function editarJefeFamiliar($token){
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+        $validate_keys = ValidateApp::keys_array_exist(
+            $JSON_DATA,
+            ['idJefeFamilia', 'idFam']
+        );
+
+        if (!$validate_keys[0]){
+            return (new Response(
+                false, 
+                "Datos incompletos (".implode(", ", $validate_keys[1]).")", 
+                400
+            ))->json();
+        }
+
+        $fam = (new FamiliaModel())->where('idFam', '=', $JSON_DATA['idFam'])->getFirst();
+        if (!isset($fam)) {
+            return (new Response(
+                false, 
+                "Familia no existe", 
+                404
+            ))->json();
+        }
+
+        $usuario = (new UsuarioModel())->where('idUsu', '=', $JSON_DATA['idJefeFamilia'])->getFirst();
+        if (!isset($usuario)) {
+            return (new Response(
+                false, 
+                "Usuario no existe", 
+                404
+            ))->json();
+        }
+
+        $group = (new GruposFamiliaresModel())->where('idUsu', '=', $JSON_DATA['idJefeFamilia'])->where('idFam', '=', $JSON_DATA['idFam'])->getFirst();
+        if (!isset($group)) {
+            return (new Response(
+                false, 
+                "Usuario no pertenece a esta familia", 
+                404
+            ))->json();
+        }
+
+        $fam->setIdUsu($JSON_DATA['idJefeFamilia']);
+        $success = $fam->where("idFam", "=", $JSON_DATA['idFam'])->update();
+        return (new Response(
+            $success, 
+            $success ? "Jefe familiar actualizado" : "No se ha podido actualizar ", 
+            $success ? 200 : 500
+        ))->json();
+    }
 }
 ?>

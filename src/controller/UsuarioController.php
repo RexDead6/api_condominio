@@ -155,7 +155,7 @@ class UsuarioController
 
         $data_response = [
             "token" => $token,
-            "isJefe" => $fam->getJefeFamilia()->getIdUsu() == $user->getIdUsu()
+            "isJefe" => ($fam != null) && $fam->getJefeFamilia()->getIdUsu() == $user->getIdUsu()
         ];
 
         return (

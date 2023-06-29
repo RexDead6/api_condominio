@@ -27,13 +27,15 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
     }
 
     public function __set($name, $value) {
-        if (isset($this->$name)){
-            $this->{$name} = $value;
+
+		if (!isset($this->Rol)){
+			$this->Rol = new RolModel();
+		}
+
+        if (isset($this->Rol->$name)){
+			$this->Rol->set_value($name, $value);
         } else {
-            if (!isset($this->Rol)){
-                $this->Rol = new RolModel();
-            }
-            $this->Rol->set_value($name, $value);
+            $this->{$name} = $value;
         }
     }
 

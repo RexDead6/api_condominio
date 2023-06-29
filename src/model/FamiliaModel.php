@@ -11,6 +11,7 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
     protected $direccion;
 	protected $users;
 	protected $JefeFamilia;
+	public $idUsu;
 
     public function __construct($propiedades = null) {
         parent::__construct('familias', FamiliaModel::class, $propiedades);
@@ -21,13 +22,15 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
     }
 
 	public function __set($name, $value) {
-        if (isset($this->$name)){
-            $this->{$name} = $value;
+
+		if (!isset($this->JefeFamilia)){
+			$this->JefeFamilia = new UsuarioModel();
+		}
+
+        if (isset($this->JefeFamilia->$name)){
+			$this->JefeFamilia->set_value($name, $value);
         } else {
-            if (!isset($this->JefeFamilia)){
-                $this->JefeFamilia = new UsuarioModel();
-            }
-            $this->JefeFamilia->set_value($name, $value);
+			$this->{$name} = $value;
         }
     }
 
@@ -113,6 +116,15 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
 
 	public function getJefeFamilia() {
 		return $this->JefeFamilia;
+	}
+
+	public function setIdUsu($idUsu): self {
+		$this->idUsu = $idUsu;
+		return $this;
+	}
+
+	public function getIdUsu() {
+		$this->idUsu;
 	}
 }
 ?>
