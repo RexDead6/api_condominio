@@ -7,7 +7,6 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 	use JsonSerializeTrait;
     protected $idUsu;
     protected $Rol;
-	public $idRol;
     protected $statusUsu;
     protected $cedUsu;
     protected $nomUsu;
@@ -32,7 +31,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 			$this->Rol = new RolModel();
 		}
 
-        if (isset($this->Rol->$name)){
+        if (property_exists($this->Rol, $name)){
 			$this->Rol->set_value($name, $value);
         } else {
             $this->{$name} = $value;

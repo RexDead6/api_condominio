@@ -11,7 +11,6 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
     protected $direccion;
 	protected $users;
 	protected $JefeFamilia;
-	public $idUsu;
 
     public function __construct($propiedades = null) {
         parent::__construct('familias', FamiliaModel::class, $propiedades);
@@ -27,7 +26,7 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
 			$this->JefeFamilia = new UsuarioModel();
 		}
 
-        if (isset($this->JefeFamilia->$name)){
+        if (property_exists($this->JefeFamilia, $name)){
 			$this->JefeFamilia->set_value($name, $value);
         } else {
 			$this->{$name} = $value;
