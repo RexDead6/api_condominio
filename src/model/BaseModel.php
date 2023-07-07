@@ -104,11 +104,12 @@ class BaseModel{
             $this->sql = "DELETE FROM $this->table $this->wheres";
             $affectedRows = $this->execute();
 
-            return $affectedRows;
+            return true;
             
         } catch (PDOException $error) {
 
-            return $error->getMessage();
+            echo $error->getMessage();
+            return false;
         }
     }
 

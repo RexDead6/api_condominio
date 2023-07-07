@@ -28,6 +28,7 @@ $app->get("familia", FamiliaController::class, "getByToken", true);
 $app->get("familias", FamiliaController::class, "getAll", true);
 $app->patch("familia", FamiliaController::class, "editarJefeFamiliar", true);
 $app->post("relacionFamilia", FamiliaController::class, "registrarMiembroFamiliar", true);
+$app->delete("removeUserFam/:idUsu", FamiliaController::class, "eliminarMiembroFamilia", true);
 
 $app->post("anuncios", AnunciosController::class, "insertAnuncio", true);
 $app->get("anuncios", AnunciosController::class, "getAll");

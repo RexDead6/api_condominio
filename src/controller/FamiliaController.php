@@ -256,5 +256,49 @@ class FamiliaController{
             $success ? 200 : 500
         ))->json();
     }
+
+    public function eliminarMiembroFamilia($token, $idUsu) {
+        $user = (new UsuarioModel())->where("idUsu", "=", $idUsu)->getFirst();
+        if (!isset($user)) {
+            return (new Response(
+                false, 
+                "Usuario no encontrado", 
+                404
+            ))->json();
+        }
+
+        $familia = (new FamiliaModel())->where("idFam", "=", explode("|", $token)[1])->getFirst();
+
+        if ($familia->getJefeFamilia()->getIdUsu() != ((int) explode("|", $token)[0])) {
+            return (new Response(
+                false, 
+                "Usted no es el jefe de su familia para realizar esta accion", 
+                400
+            ))->json();
+        }
+
+        $relacionFam = (new GruposFamiliaresModel())->where("idUsu", "=", $idUsu)->where("idFam", "=", $familia->getIdFam())->getFirst();
+        if (!isset($relacionFam)){
+            return (new Response(
+                false, 
+                "El usuario no pertenece a su Familia", 
+                400
+            ))->json();
+        }
+
+        $success = (new GruposFamiliaresModel())->where("idUsu", "=", $idUsu)->where("idFam", "=", $familia->getIdFam())->delete();
+        if ($success) {
+            (new TokenAccess())->where("idUsu", "=", $idUsu)->delete();
+            $user->setStatusUsu(0);
+            $user->where("idUsu", "=", $idUsu)->update();
+
+        }
+
+        return (new Response(
+            $success, 
+            $success ? "El usuario ha sido eliminado de su familia" : "Ha ocurrido un problema, intente de nuevo", 
+            $success ? 200 : 500
+        ))->json();
+    }
 }
 ?>
