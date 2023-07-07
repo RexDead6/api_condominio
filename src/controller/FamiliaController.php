@@ -248,8 +248,13 @@ class FamiliaController{
             ))->json();
         }
 
+        $userJefe = $fam->getJefeFamilia()->getIdUsu();
+
         $fam->setIdUsu($JSON_DATA['idJefeFamilia']);
         $success = $fam->where("idFam", "=", $JSON_DATA['idFam'])->update();
+        (new TokenAccess())->where("idUsu", "=", $userJefe)->delete();
+        (new TokenAccess())->where("idUsu", "=", $JSON_DATA['idJefeFamilia'])->delete();
+        
         return (new Response(
             $success, 
             $success ? "Jefe familiar actualizado" : "No se ha podido actualizar ", 
