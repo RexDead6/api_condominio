@@ -83,7 +83,7 @@ class FacturaController{
             return (
                 new Response(
                 false,
-                "No se ha podido registrar su servicio, intente de nuevo",
+                "No se ha podido registrar su factura, intente de nuevo",
                 500
                 )
             )->json();
@@ -96,6 +96,13 @@ class FacturaController{
 
         $fac = (new FacturaModel())->where("idFac", "=", $idFac)->getFirst();
 
+        $tasa = (new AjustesModel())->where("name", "=", "divisa")->getFirst()->getValue();
+        $monto = $servicio->getMontoSer();
+
+        if ($servicio->getDivisa()) {
+            $monto = $servicio->getMontoSer() * ((float) $tasa);
+        }
+
         $pdfManager = new PDFManager();
         $pdfManager->template("servicio.template.html", [
             "familia"=>$fam->getDescFam(),
@@ -103,10 +110,10 @@ class FacturaController{
             "fecha_factura"=>$fac->getFechapagoFac(),
             "rows"=>[
                 [
-                    $servicio->getDescSer(), Formating::numberFormat($servicio->getMontoSer()), $MesesPorPagar, Formating::numberFormat($servicio->getMontoSer() * $MesesPorPagar)
+                    $servicio->getDescSer(), Formating::numberFormat($monto), $MesesPorPagar, Formating::numberFormat($monto * $MesesPorPagar)
                 ]
             ],
-            "total"=>Formating::numberFormat($servicio->getMontoSer() * $MesesPorPagar)
+            "total"=>Formating::numberFormat($monto * $MesesPorPagar)
         ]);
         $pdfManager->output("servicio_$idFac.pdf");
 

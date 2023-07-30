@@ -9,6 +9,7 @@ class ProductoModel extends GenericModel implements JsonSerializable {
     protected $idPro;
 	protected $usuario;
     protected $nomPro;
+	protected $divisa;
     protected $costoPro;
     protected $existPro;
 	protected $imgPro;
@@ -79,6 +80,22 @@ class ProductoModel extends GenericModel implements JsonSerializable {
 	public function setNomPro($nomPro): self {
 		$this->nomPro = $nomPro;
 		return $this;
+	}
+
+	/**
+	 * @param mixed $divisa 
+	 * @return self
+	 */
+	public function setDivisa($divisa): self {
+		$this->divisa = $divisa;
+		return $this;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getMontoSer() {
+		return $this->montoSer;
 	}
 	
 	/**

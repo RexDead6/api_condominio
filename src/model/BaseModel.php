@@ -33,7 +33,8 @@ class BaseModel{
 
         } catch (PDOException $error) {
 
-            return $error->getMessage();
+            echo $error->getMessage();
+            return [];
         }
     }
 

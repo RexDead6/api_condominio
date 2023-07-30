@@ -10,6 +10,7 @@ class ServicioModel extends GenericModel implements JsonSerializable{
     protected $PagoMovil;
     protected $descSer;
     protected $isMensualSer;
+	protected $divisa;
     protected $montoSer;
     protected $statusSer;
 	protected $fechaInicioServicio;
@@ -95,6 +96,22 @@ class ServicioModel extends GenericModel implements JsonSerializable{
 	 */
 	public function setIsMensualSer($isMensualSer): self {
 		$this->isMensualSer = $isMensualSer;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDivisa() {
+		return $this->divisa;
+	}
+	
+	/**
+	 * @param mixed $divisa 
+	 * @return self
+	 */
+	public function setDivisa($divisa): self {
+		$this->divisa = $divisa;
 		return $this;
 	}
 	

@@ -11,6 +11,7 @@ require_once dirname(__DIR__) . '/controller/ProductoController.php';
 require_once dirname(__DIR__) . '/controller/ProveedorController.php';
 require_once dirname(__DIR__) . '/controller/CompraController.php';
 require_once dirname(__DIR__) . '/controller/VentaController.php';
+require_once dirname(__DIR__) . '/controller/AjustesController.php';
 
 $app = new RouterHelper();
 
@@ -68,6 +69,8 @@ $app->get("ventaUsuarios", VentaController::class, "getUsersProducts", true);
 $app->post("venta", VentaController::class, "insert", true);
 $app->get("venta/:type/:status", VentaController::class, "getAll", true);
 $app->patch("venta/:idVen/:status", VentaController::class, "updateStatus", true);
+
+$app->get("ajuste/:ajuste", AjustesController::class, "getAjuste");
 
 $app->get("test", UsuarioController::class, "test");
 ?>

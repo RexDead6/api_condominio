@@ -12,7 +12,7 @@ class ServicioController{
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['idPmv', 'descSer', 'isMensualSer', 'montoSer']
+            ['idPmv', 'descSer', 'isMensualSer', 'montoSer', 'divisa']
         );
 
         if (!$validate_keys[0]) {
