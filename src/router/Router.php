@@ -12,6 +12,7 @@ require_once dirname(__DIR__) . '/controller/ProveedorController.php';
 require_once dirname(__DIR__) . '/controller/CompraController.php';
 require_once dirname(__DIR__) . '/controller/VentaController.php';
 require_once dirname(__DIR__) . '/controller/AjustesController.php';
+require_once dirname(__DIR__) . '/controller/UrbanizacionController.php';
 
 $app = new RouterHelper();
 
@@ -23,6 +24,8 @@ $app->get("usuario/:idUsu", UsuarioController::class, "getById");
 $app->get("usuarioInactivo", UsuarioController::class, "getInactive");
 $app->patch('usuario', UsuarioController::class, 'update', true);
 $app->post("usuario/image", UsuarioController::class, 'update_image', true);
+
+$app->post("comunidad", UrbanizacionController::class, "insert", true);
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
