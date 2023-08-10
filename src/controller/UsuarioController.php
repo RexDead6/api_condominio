@@ -250,5 +250,42 @@ class UsuarioController
             )
         )->json();
     }
+
+    public function update_rol($token, $idUsu, $idRol) {
+        if (((int) explode("|", $token)[2]) > 2) {
+            return (
+                new Response(
+                false,
+                "Permisos insuficientes",
+                401
+                )
+            )->json();
+        }  
+
+        $usuario = (new UsuarioModel())->where("idUsu", "=", $idUsu)->getFirst();
+        if (!isset($usuario)) {
+            return (new Response(
+                false, 
+                "Usuario no existe", 
+                404
+            ))->json();
+        }
+        $rol= (new RolModel())->where("idRol", "=", $idRol)->getFirst();
+        if (!isset($rol)) {
+            return (new Response(
+                false, 
+                "Rol no existe", 
+                404
+            ))->json();
+        }
+
+        $usuario->setIdRol($idRol); 
+        $result = $usuario->where("idUsu", "=", $idUsu)->update();
+        return (new Response(
+            $result,
+            $result ? "Usuario actualizado" : "No se ha podido actualizar el usuario",
+            $result ? 200 : 500,
+        ))->json();
+    }
 }
 ?>

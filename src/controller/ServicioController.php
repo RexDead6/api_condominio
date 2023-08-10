@@ -25,7 +25,7 @@ class ServicioController{
             )->json();
         }
 
-        if (((int) explode("|", $token)[2]) != 1) {
+        if (((int) explode("|", $token)[2]) > 2) {
             return (
                 new Response(
                 false,
@@ -107,7 +107,7 @@ class ServicioController{
 
     public function getAllAdmin($token)
     {
-        if (((int) explode("|", $token)[2]) != 1) {
+        if (((int) explode("|", $token)[2]) > 2) {
             return (
                 new Response(
                 false,
@@ -127,5 +127,7 @@ class ServicioController{
             )
         )->json();
     }
+
+
 }
 ?>

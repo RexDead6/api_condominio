@@ -7,6 +7,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 	use JsonSerializeTrait;
     protected $idUsu;
     protected $Rol;
+	public $idRol;
     protected $statusUsu;
     protected $cedUsu;
     protected $nomUsu;
@@ -37,6 +38,22 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
             $this->{$name} = $value;
         }
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getIdRol() {
+		return $this->idRol;
+	}
+	
+	/**
+	 * @param mixed $idUsu 
+	 * @return self
+	 */
+	public function setIdRol($idRol): self {
+		$this->idRol = $idRol;
+		return $this;
+	}
 
 	/**
 	 * @return mixed
