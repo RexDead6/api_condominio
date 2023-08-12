@@ -28,6 +28,9 @@ $app->post("usuario/image", UsuarioController::class, 'update_image', true);
 $app->patch("rolUsuario/:idUsu/:idRol", UsuarioController::class, "update_rol", true);
 
 $app->post("comunidad", UrbanizacionController::class, "insert", true);
+$app->get("comunidad", UrbanizacionController::class, "getAll");
+$app->get("comunidad/usuario", UrbanizacionController::class, "getUserUrb", true);
+$app->get("comunidad/{idUrb}", UrbanizacionController::class, "getById");
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
