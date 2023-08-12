@@ -1,5 +1,8 @@
 <?php
 require_once dirname(__DIR__) . '/model/UrbanizacionModel.php';
+require_once dirname(__DIR__) . '/model/UsuarioModel.php';
+require_once dirname(__DIR__) . '/model/FamiliaUrbanizacion.php';
+require_once dirname(__DIR__) . '/model/FamiliaModel.php';
 require_once dirname(__DIR__) . '/model/TokenAccess.php';
 require_once dirname(__DIR__) . '/util/Response.php';
 require_once dirname(__DIR__) . '/util/ValidateApp.php';
@@ -80,6 +83,23 @@ class UrbanizacionController
                 401
             ))->json();
         }
+    }
+
+    public function getUserUrb($token){
+        $grupos = (new FamiliaUrbanizacionModel())->where("idFam", "=", explode('|', $token)[1])->getAll();
+
+        $comunidades = [];
+
+        foreach ($grupos as $grupo) {
+            $comunidades[] = (new UrbanizacionModel())->where("idUrb", "=", $grupo->getIdUrb())->getFirst();
+        }
+
+        return (new Response(
+            count($comunidades) > 0, 
+            count($comunidades) > 0 ? "Comunidades encontradas" : "Su usuario no pertenece a ninguna comunidad", 
+            count($comunidades) > 0 ? 200 : 404,
+            $comunidades
+        ))->json();
     }
 }
 ?>

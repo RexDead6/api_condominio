@@ -52,7 +52,7 @@ class UsuarioController
 
         $id_usuario = (new UsuarioModel())->insert($JSON_DATA);
         $user = (new UsuarioModel())->where("idUsu", "=", $id_usuario)->inner("roles", 'idRol')->getFirst();
-        $token = $id_usuario . "|00|" . $user->getRol()->getIdRol() . "|" . bin2hex(random_bytes(50));
+        $token = $id_usuario . "|00|" . $user->getRol()->getNivelRol() . "|" . bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $id_usuario,

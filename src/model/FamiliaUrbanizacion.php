@@ -2,29 +2,29 @@
 require_once dirname( __DIR__ ) . '/model/GenericModel.php';
 require_once dirname( __DIR__ ) . '/util/JsonSerialize.php';
 
-class GruposFamiliaresModel extends GenericModel implements JsonSerializable{
+class FamiliaUrbanizacionModel extends GenericModel implements JsonSerializable{
 	use JsonSerializeTrait;
 
-    protected $idUsu;
+    protected $idUrb;
     protected $idFam;
 
     public function __construct($propiedades = null) {
-        parent::__construct('gruposfamiliares', GruposFamiliaresModel::class, $propiedades);
+        parent::__construct('familiaurbanizacion', FamiliaUrbanizacionModel::class, $propiedades);
     }
 
 	/**
 	 * @return mixed
 	 */
-	public function getIdUsu() {
-		return $this->idUsu;
+	public function getIdUrb() {
+		return $this->idUrb;
 	}
 	
 	/**
 	 * @param mixed $idUsu 
 	 * @return self
 	 */
-	public function setIdUsu($idUsu): self {
-		$this->idUsu = $idUsu;
+	public function setIdUrb($idUrb): self {
+		$this->idUrb = $idUrb;
 		return $this;
 	}
 	
