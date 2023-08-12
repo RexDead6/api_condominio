@@ -7,6 +7,8 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
 
     protected $idUrb;
     protected $nomUrb;
+    protected $direccion;
+    protected $status;
 
     public function __construct($propiedades = null){
         parent::__construct('urbanizacion', UrbanizacionModel::class, $propiedades);
@@ -30,6 +32,22 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
 
     public function setNomUrn($nomUrb) {
         $this->nomUrb = $nomUrb;
+    }
+
+    public function getDireccion() {
+        return $this->direccion;
+    }
+
+    public function setDireccion($direccion) {
+        $this->direccion = $direccion;
+    }
+
+    public function getStatus() {
+        return $this->status;
+    }
+
+    public function setStatus($status) {
+        $this->status = $status;
     }
 }
 ?>

@@ -10,7 +10,7 @@ class UrbanizacionController
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['nomUrb']
+            ['nomUrb', 'direccion']
         );
 
         if (!$validate_keys[0]) {
@@ -21,6 +21,14 @@ class UrbanizacionController
                     400
                 )
             )->json();
+        }
+
+        if (((int) explode("|", $token)[2]) == 1){
+            return (new Response(
+                false, 
+                "Permisos insuficientes", 
+                401
+            ))->json();
         }
 
         if ((new ValidateApp())->isDuplicated("urbanizacion", "nomUrb", $JSON_DATA["nomUrb"])) {
@@ -45,7 +53,33 @@ class UrbanizacionController
 
     public function getAll() {
         $comunidades = (new UrbanizacionModel())->getAll();
-        
+        return (new Response(
+            count($comunidades) > 0,
+            count($comunidades) > 0 ? "Comunidades encontradas" : "No existen comunidades registradas",
+            count($comunidades) > 0 ? 200 : 404,
+            $comunidades
+        ))->json();
+    }
+
+    public function getById($id) {
+        $comunidad = (new UrbanizacionModel())->where("idUrb", "=", $id)->getFirst();
+        return (new Response(
+            isset($comunidad),
+            isset($comunidad) ? "Comunidad encontrada" : "Su comunidad no existe",
+            isset($comunidad) ? 200 : 404,
+            $comunidad
+        ))->json();
+    }
+
+    public function edit($token, $id) {
+        $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
+        if (((int) explode("|", $token)[2]) == 1){
+            return (new Response(
+                false, 
+                "Permisos insuficientes", 
+                401
+            ))->json();
+        }
     }
 }
 ?>

@@ -26,6 +26,8 @@ $app->patch('usuario', UsuarioController::class, 'update', true);
 $app->post("usuario/image", UsuarioController::class, 'update_image', true);
 
 $app->post("comunidad", UrbanizacionController::class, "insert", true);
+$app->get("comunidad", UrbanizacionController::class, "getAll");
+$app->get("comunidad/{idUrb}", UrbanizacionController::class, "getById");
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
