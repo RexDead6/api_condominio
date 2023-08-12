@@ -17,3 +17,6 @@
 
 ## EMPUJAR CAMBIOS
 > git push origin <rama>
+
+## Pull 
+> git pull origin main
