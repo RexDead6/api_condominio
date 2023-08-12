@@ -25,6 +25,8 @@ $app->get("usuarioInactivo", UsuarioController::class, "getInactive");
 $app->patch('usuario', UsuarioController::class, 'update', true);
 $app->post("usuario/image", UsuarioController::class, 'update_image', true);
 
+$app->patch("rolUsuario/:idUsu/:idRol", UsuarioController::class, "update_rol", true);
+
 $app->post("comunidad", UrbanizacionController::class, "insert", true);
 $app->get("comunidad", UrbanizacionController::class, "getAll");
 $app->get("comunidad/{idUrb}", UrbanizacionController::class, "getById");
