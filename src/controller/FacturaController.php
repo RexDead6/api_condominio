@@ -146,7 +146,7 @@ class FacturaController{
 
     public function getFacturasAdmin($token, $idSer, $status){
 
-        if (((int) explode("|", $token)[2]) != 1) {
+        if (((int) explode("|", $token)[2]) > 2) {
             return (
                 new Response(
                 false,
@@ -183,7 +183,7 @@ class FacturaController{
     }
 
     public function updateStatus($token, $idFac, $status){
-        if (((int) explode("|", $token)[2]) != 1) {
+        if (((int) explode("|", $token)[2]) > 2) {
             return (
                 new Response(
                 false,
