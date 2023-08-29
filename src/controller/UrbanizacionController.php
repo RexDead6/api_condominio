@@ -105,5 +105,43 @@ class UrbanizacionController
             $comunidades
         ))->json();
     }
+
+    public function postuseradmin($token, $idUsu, $idUrb){
+        if (((int) explode("|", $token)[2]) != 1) {
+            return (new Response(
+                false, 
+                "Permisos insuficientes", 
+                401
+            ))->json();
+        }
+        
+        $usuario = (new UsuarioModel())->where("idUsu", "=", $idUsu)->getFirst();
+        if(!isset($usuario)){
+            return(new Response(
+                false,
+                "Usuario no existe",
+                404
+            ))->json();
+        }
+
+        $urbanizacion = (new UrbanizacionModel())->where("idUrb", "=", $idUrb)->getFirst();
+        if(!isset($urbanizacion)){
+            return (new Response(
+                false,
+                "Urbanizacion no existe",
+                404
+            ))->json();
+        }
+
+        $gruposfamiliares = (new GruposFamiliaresModel())->where("idUsu", "=", $idUsu)->getFirst();
+        $urba = (new FamiliaUrbanizacionModel())->where("idFam", "=", $gruposfamiliares->getIdFam())->getAll();
+        if (count($urba) <= 0){
+            return (new Response(
+                false,
+                "Su usuario no pertenece a esta comunidad",
+                400
+            ))->json();
+        }
+    }
 }
 ?>
