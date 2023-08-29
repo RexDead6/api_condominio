@@ -54,8 +54,8 @@ $app->patch("pagoMovil", PagoMovilController::class, "update", true);
 $app->patch("pagoMovilVenta/:idPvm", PagoMovilController::class, "updateVenta", true);
 
 $app->post("servicio", ServicioController::class, "insert", true);
-$app->get("servicio", ServicioController::class, "getAll", true);
-$app->get("servicioAdmin", ServicioController::class, "getAllAdmin", true);
+$app->get("servicio/:idUrb", ServicioController::class, "getAll", true);
+$app->get("servicioAdmin/:idUrb", ServicioController::class, "getAllAdmin", true);
 
 $app->post("factura", FacturaController::class, "insertFactura", true);
 $app->get("factura/:status", FacturaController::class, 'getFacturas', true);

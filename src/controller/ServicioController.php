@@ -1,5 +1,6 @@
 <?php
 require_once dirname( __DIR__ ) . '/model/ServicioModel.php';
+require_once dirname( __DIR__ ) . '/model/UrbanizacionModel.php';
 require_once dirname( __DIR__ ) . '/model/PagoMovilModel.php';
 require_once dirname( __DIR__ ) . '/util/Response.php';
 require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
@@ -12,7 +13,7 @@ class ServicioController{
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['idPmv', 'descSer', 'isMensualSer', 'montoSer', 'divisa']
+            ['idPmv', 'descSer', 'isMensualSer', 'montoSer', 'divisa', 'idUrb']
         );
 
         if (!$validate_keys[0]) {
@@ -33,6 +34,15 @@ class ServicioController{
                 401
                 )
             )->json();
+        }
+
+        $urbanizacion = (new UrbanizacionModel())->where("idUrb", "=", $JSON_DATA['idUrb'])->getFirst();
+        if (!isset($urbanizacion)){
+            return (new Response(
+                false,
+                "Urbanizacion inexistente",
+                404
+            ))->json();
         }
 
         $pmv = (new PagoMovilModel())->where("idPmv", "=", $JSON_DATA['idPmv'])->getFirst();
@@ -66,9 +76,18 @@ class ServicioController{
         )->json();
     }
 
-    public function getAll($token)
+    public function getAll($token, $idUrb)
     {
-        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->orderBy("idSer")->getAll();
+        $urbanizacion = (new UrbanizacionModel())->where("idUrb", "=", $idUrb)->getFirst();
+        if (!isset($urbanizacion)){
+            return (new Response(
+                false,
+                "Urbanizacion inexistente",
+                404
+            ))->json();
+        }
+
+        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->where("idUrb", "=", $idUrb)->orderBy("idSer")->getAll();
         $newListServicios = [];
         $idFam = explode("|", $token)[1];
         foreach ($servicios as $servicio) {
@@ -105,7 +124,7 @@ class ServicioController{
         )->json();
     }
 
-    public function getAllAdmin($token)
+    public function getAllAdmin($token, $idUrb)
     {
         if (((int) explode("|", $token)[2]) > 2) {
             return (
@@ -117,7 +136,16 @@ class ServicioController{
             )->json();
         }
 
-        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->orderBy("idSer")->getAll();
+        $urbanizacion = (new UrbanizacionModel())->where("idUrb", "=", $idUrb)->getFirst();
+        if (!isset($urbanizacion)){
+            return (new Response(
+                false,
+                "Urbanizacion inexistente",
+                404
+            ))->json();
+        }
+
+        $servicios = (new ServicioModel())->inner("pagomovil", "idPmv")->inner("bancos", "idBan", "pagomovil")->where("idUrb", "=", $idUrb)->orderBy("idSer")->getAll();
         return (
             new Response(
                 count($servicios) > 0,

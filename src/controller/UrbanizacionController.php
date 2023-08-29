@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__DIR__) . '/model/UrbanizacionModel.php';
+require_once dirname(__DIR__) . '/model/UsuarioAdminModel.php';
 require_once dirname(__DIR__) . '/model/UsuarioModel.php';
 require_once dirname(__DIR__) . '/model/FamiliaUrbanizacion.php';
 require_once dirname(__DIR__) . '/model/FamiliaModel.php';
@@ -79,7 +80,7 @@ class UrbanizacionController
         if (((int) explode("|", $token)[2]) == 1){
             return (new Response(
                 false, 
-                "Permisos insuficientes", 
+                "Permisos insuficientes",
                 401
             ))->json();
         }
@@ -91,7 +92,10 @@ class UrbanizacionController
         $comunidades = [];
 
         foreach ($grupos as $grupo) {
-            $comunidades[] = (new UrbanizacionModel())->where("idUrb", "=", $grupo->getIdUrb())->getFirst();
+            $comunidad = (new UrbanizacionModel())->where("idUrb", "=", $grupo->getIdUrb())->getFirst();
+            $result = (new UsuarioAdminModel())->where('idUsu', '=', explode('|', $token)[0])->where('idUrb', '=', $grupo->getIdUrb())->getFirst();
+            $comunidad->setIsAdmin(isset($result));
+            $comunidades[] = $comunidad;
         }
 
         return (new Response(

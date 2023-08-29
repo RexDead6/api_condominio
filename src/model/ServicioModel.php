@@ -8,6 +8,7 @@ class ServicioModel extends GenericModel implements JsonSerializable{
     
     protected $idSer;
     protected $PagoMovil;
+	public $idUrb;
     protected $descSer;
     protected $isMensualSer;
 	protected $divisa;

@@ -9,6 +9,7 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
     protected $nomUrb;
     protected $direccion;
     protected $status;
+    protected $isAdmin;
 
     public function __construct($propiedades = null){
         parent::__construct('urbanizacion', UrbanizacionModel::class, $propiedades);
@@ -16,6 +17,10 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
 
     public function set_value($name, $value){
 		$this->{$name} = $value;
+    }
+
+    public function setIsAdmin($isAdmin){
+        $this->isAdmin = $isAdmin;
     }
 
     public function getIdUrb(){
