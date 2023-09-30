@@ -21,6 +21,7 @@ NAVIGATION APP
 
 Realizar un administrador de los condominios
 
+Familia se registra sin registrar comunidad
 Editar foto de usuarios
 editar datos del usuario
 ajustar mensaje de pago movil cuando no existan

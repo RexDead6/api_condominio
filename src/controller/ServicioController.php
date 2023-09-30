@@ -1,5 +1,6 @@
 <?php
 require_once dirname( __DIR__ ) . '/model/ServicioModel.php';
+require_once dirname( __DIR__ ) . '/model/UsuarioAdminModel.php';
 require_once dirname( __DIR__ ) . '/model/UrbanizacionModel.php';
 require_once dirname( __DIR__ ) . '/model/PagoMovilModel.php';
 require_once dirname( __DIR__ ) . '/util/Response.php';
@@ -26,7 +27,9 @@ class ServicioController{
             )->json();
         }
 
-        if (((int) explode("|", $token)[2]) > 2) {
+        $isAdmin = (new UsuarioAdminModel())->where("idUsu", "=", ((int) explode("|", $token)[0]))->where("idUrb", "=", $JSON_DATA["idUrb"])->getFirst();
+
+        if (!isset($isAdmin)) {
             return (
                 new Response(
                 false,

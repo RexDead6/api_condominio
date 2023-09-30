@@ -27,7 +27,7 @@ class UrbanizacionController
             )->json();
         }
 
-        if (((int) explode("|", $token)[2]) == 1){
+        if (((int) explode("|", $token)[2]) > 1){
             return (new Response(
                 false, 
                 "Permisos insuficientes", 
@@ -45,7 +45,7 @@ class UrbanizacionController
             )->json();
         }
 
-        $success = (new UrbanizacionModel())->insert($JSON_DATA);
+        $success = (new UrbanizacionModel())->insert(["nomUrb"=>$JSON_DATA['nomUrb'], "direccion"=>$JSON_DATA['direccion']]);
         return (
             new Response(
                 $success != false,
@@ -57,6 +57,12 @@ class UrbanizacionController
 
     public function getAll() {
         $comunidades = (new UrbanizacionModel())->getAll();
+        
+        foreach($comunidades as $comunidad) {
+            $count = count((new FamiliaUrbanizacionModel())->where("idUrb", "=", $comunidad->getIdUrb())->getAll());
+            $comunidad->setTotalFamilias($count);
+        }
+
         return (new Response(
             count($comunidades) > 0,
             count($comunidades) > 0 ? "Comunidades encontradas" : "No existen comunidades registradas",
@@ -104,6 +110,10 @@ class UrbanizacionController
             count($comunidades) > 0 ? 200 : 404,
             $comunidades
         ))->json();
+    }
+
+    public function disableUrb($token, $idUrb) {
+
     }
 
     public function postuseradmin($token, $idUsu, $idUrb){

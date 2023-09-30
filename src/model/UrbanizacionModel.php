@@ -10,6 +10,7 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
     protected $direccion;
     protected $status;
     protected $isAdmin;
+    protected $totalFamilias;
 
     public function __construct($propiedades = null){
         parent::__construct('urbanizacion', UrbanizacionModel::class, $propiedades);
@@ -53,6 +54,14 @@ class UrbanizacionModel extends GenericModel implements JsonSerializable{
 
     public function setStatus($status) {
         $this->status = $status;
+    }
+
+    public function getTotalFamilias() {
+        return $this->totalFamilias;
+    }
+
+    public function setTotalFamilias($totalFamilias) {
+        $this->totalFamilias = $totalFamilias;
     }
 }
 ?>

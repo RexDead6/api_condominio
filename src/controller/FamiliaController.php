@@ -1,7 +1,9 @@
 <?php
 require_once dirname( __DIR__ ) . '/model/FamiliaModel.php';
 require_once dirname( __DIR__ ) . '/model/UsuarioModel.php';
+require_once dirname( __DIR__ ) . '/model/UrbanizacionModel.php';
 require_once dirname( __DIR__ ) . '/model/GruposFamiliaresModel.php';
+require_once dirname( __DIR__ ) . '/model/FamiliaUrbanizacion.php';
 require_once dirname( __DIR__ ) . '/util/Response.php';
 require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
 require_once dirname( __DIR__ ) . '/model/TokenAccess.php';
@@ -11,7 +13,7 @@ class FamiliaController{
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['idJefeUsu', 'descFam', 'direccion']
+            ['idJefeUsu', 'descFam', 'direccion', 'idUrb']
         );
 
         if (!$validate_keys[0]){
@@ -27,6 +29,15 @@ class FamiliaController{
             return (new Response(
                 false, 
                 "Usuario no existe",
+                400
+            ))->json();
+        }
+
+        $urb = (new UrbanizacionModel())->where("idUrb", "=", $JSON_DATA["idUrb"])->getFirst();
+        if (!isset($urb)) {
+            return (new Response(
+                false, 
+                "Comunidad no existe",
                 400
             ))->json();
         }
@@ -53,6 +64,8 @@ class FamiliaController{
                 500
             ))->json();
         }
+
+        $famUrb = (new FamiliaUrbanizacionModel())->insert(["idFam"=>$idFam, "idUrb"=>$JSON_DATA["idUrb"]]);
 
         $user->setStatusUsu(1);
         $user->where("idUsu", "=", $JSON_DATA['idJefeUsu'])->update();
@@ -115,6 +128,21 @@ class FamiliaController{
             $fam
         );
         return $response->json();
+    }
+
+    public function getByUrb($idUrb){
+        $fams_raw = (new FamiliaUrbanizacionModel())->where("idUrb", "=", $idUrb)->getAll();
+        $familias = [];
+        foreach ($fams_raw as $fam_raw) {
+            $familias[] = (new FamiliaModel())->inner("usuarios", "idUsu")->where("idFam", "=", $fam_raw->getIdFam())->getFirst();
+        }
+
+        return (new Response(
+            count($familias) > 0,
+            count($familias) > 0 ? "Familias encontrados" : "No hay familias disponibles",
+            count($familias) > 0 ? 200 : 404,
+            $familias
+        ))->json();
     }
 
     public function registrarMiembroFamiliar($token){

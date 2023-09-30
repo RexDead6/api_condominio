@@ -35,6 +35,7 @@ $app->get("comunidad/{idUrb}", UrbanizacionController::class, "getById");
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
 $app->get("familias", FamiliaController::class, "getAll", true);
+$app->get("familiasComunidad/:idUrb", FamiliaController::class, "getByUrb");
 $app->patch("familia", FamiliaController::class, "editarJefeFamiliar", true);
 $app->post("relacionFamilia", FamiliaController::class, "registrarMiembroFamiliar", true);
 $app->delete("removeUserFam/:idUsu", FamiliaController::class, "eliminarMiembroFamilia", true);
