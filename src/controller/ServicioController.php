@@ -129,7 +129,7 @@ class ServicioController{
 
     public function getAllAdmin($token, $idUrb)
     {
-        if (((int) explode("|", $token)[2]) > 2) {
+        if (((int) explode("|", $token)[2]) != 1) {
             return (
                 new Response(
                 false,

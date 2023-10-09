@@ -269,8 +269,8 @@ class UsuarioController
         )->json();
     }
 
-    public function update_rol($token, $idUsu, $idRol) {
-        if (((int) explode("|", $token)[2]) > 2) {
+    public function update_rol($token, $idUsu, $nivelRol) {
+        if (((int) explode("|", $token)[2]) != 1) {
             return (
                 new Response(
                 false,
@@ -288,7 +288,7 @@ class UsuarioController
                 404
             ))->json();
         }
-        $rol= (new RolModel())->where("idRol", "=", $idRol)->getFirst();
+        $rol= (new RolModel())->where("nivelRol", "=", $nivelRol)->getFirst();
         if (!isset($rol)) {
             return (new Response(
                 false, 
@@ -297,12 +297,12 @@ class UsuarioController
             ))->json();
         }
 
-        $usuario->setIdRol($idRol); 
+        $usuario->setIdRol($rol->getIdRol()); 
         $result = $usuario->where("idUsu", "=", $idUsu)->update();
         return (new Response(
-            $result,
-            $result ? "Usuario actualizado" : "No se ha podido actualizar el usuario",
-            $result ? 200 : 500,
+            $result != false,
+            $result != false ? "Usuario actualizado" : "No se ha podido actualizar el usuario",
+            $result != false ? 200 : 500,
         ))->json();
     }
 }

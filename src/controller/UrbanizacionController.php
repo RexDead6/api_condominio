@@ -27,7 +27,7 @@ class UrbanizacionController
             )->json();
         }
 
-        if (((int) explode("|", $token)[2]) > 1){
+        if (((int) explode("|", $token)[2]) != 1){
             return (new Response(
                 false, 
                 "Permisos insuficientes", 
@@ -83,7 +83,7 @@ class UrbanizacionController
 
     public function edit($token, $id) {
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
-        if (((int) explode("|", $token)[2]) == 1){
+        if (((int) explode("|", $token)[2]) != 1){
             return (new Response(
                 false, 
                 "Permisos insuficientes",
