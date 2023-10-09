@@ -82,6 +82,24 @@ class UsuarioController
         return $response->json();
     }
 
+    public function getByUrb($idUrb) {
+        $users = (new UsuarioModel())->inner("roles", "idRol")->getAll();
+        $usersUrb = [];
+        foreach ($users as $user) {
+            $fam = (new GruposFamiliaresModel())->where("idUsu", "=", $user->getIdUsu())->getFirst();
+            $urbs = (new FamiliaUrbanizacionModel())->where("idFam", "=", $fam->getIdFam())->where("idUrb", "=", $idUrb)->getFirst();
+            if (isset($urbs)) $usersUrb[] = $user;
+        }
+        return (
+            new Response(
+            count($usersUrb) > 0,
+            count($usersUrb) > 0 ? "Usuarios encontrados" : "Comunidad no posee usuarios",
+            count($usersUrb) > 0 ? 200 :  404,
+            $usersUrb
+            )
+        )->json();
+    }
+
     public function getInactive()
     {
         $response = new Response(

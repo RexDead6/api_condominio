@@ -20,6 +20,7 @@ $app->post("login", UsuarioController::class, "Login");
 $app->post("logout", UsuarioController::class, "logout", true);
 $app->post("usuario", UsuarioController::class, "registrarUsu");
 $app->get("usuario", UsuarioController::class, "getAll");
+$app->get("usuarioUrb/:idUrb", UsuarioController::class, "getByUrb");
 $app->get("usuario/:idUsu", UsuarioController::class, "getById");
 $app->get("usuarioInactivo", UsuarioController::class, "getInactive");
 $app->patch('usuario', UsuarioController::class, 'update', true);
