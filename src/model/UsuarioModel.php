@@ -17,6 +17,7 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
     public $claveUsu;
     protected $imgUsu;
 	protected $Productos;
+	protected $isAdmin;
 
     public function __construct($propiedades = null) {
         parent::__construct('usuarios', UsuarioModel::class, $propiedades);
@@ -229,6 +230,14 @@ class UsuarioModel extends GenericModel implements JsonSerializable{
 	public function setProductos($Productos): self {
 		$this->Productos = $Productos;
 		return $this;
+	}
+
+	public function getIsAdmin() {
+		return $this->isAdmin;
+	}
+
+	public function setIsAdmin($isAdmin) {
+		$this->isAdmin = $isAdmin;
 	}
 }
 

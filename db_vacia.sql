@@ -14,86 +14,344 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Volcando datos para la tabla condominio.anuncios: ~0 rows (aproximadamente)
 
--- Volcando datos para la tabla condominio.auditoria: ~0 rows (aproximadamente)
+-- Volcando estructura de base de datos para condominio
+CREATE DATABASE IF NOT EXISTS `condominio` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `condominio`;
 
--- Volcando datos para la tabla condominio.bancos: ~0 rows (aproximadamente)
-INSERT INTO `bancos` (`idBan`, `nomBan`, `codBan`) VALUES
-	(1, 'Banco de Venezuela', '0102');
+-- Volcando estructura para tabla condominio.ajustes
+CREATE TABLE IF NOT EXISTS `ajustes` (
+  `name` varchar(50) NOT NULL,
+  `value` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.compra: ~1 rows (aproximadamente)
-INSERT INTO `compra` (`idCom`, `idUsu`, `idProv`, `monto`, `porcentaje`, `fecha_compra`) VALUES
-	(24, 49, 14, 1600, 20, '2023-07-01 14:19:04');
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.compraproductos: ~1 rows (aproximadamente)
-INSERT INTO `compraproductos` (`idPro`, `idCom`, `cantidad`, `costo`) VALUES
-	(21, 24, 80, 20);
+-- Volcando estructura para tabla condominio.anuncios
+CREATE TABLE IF NOT EXISTS `anuncios` (
+  `idAnu` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) NOT NULL,
+  `descAnu` varchar(250) NOT NULL,
+  `image` varchar(250) NOT NULL DEFAULT '',
+  `fechaAnu` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idAnu`),
+  KEY `FK_anuncios_usuarios` (`idUsu`),
+  CONSTRAINT `FK_anuncios_usuarios` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.factura: ~0 rows (aproximadamente)
-INSERT INTO `factura` (`idFac`, `idSer`, `idFam`, `montoFac`, `fechapagFac`, `status`, `meses`) VALUES
-	(30, 16, 31, 25, '2023-07-01 14:12:55', 1, 1);
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.familias: ~1 rows (aproximadamente)
-INSERT INTO `familias` (`idFam`, `descFam`, `hashFam`, `direccion`, `idUsu`) VALUES
-	(11, 'Albarracin', '384c0c8ce1f7cb52d5e92f02db8047e1e88a150a', 'calle A #17', 10),
-	(31, 'Rangel', 'c887bdc3fe1355bfeeeb402c8476ee7abfabf450', 'Calle A #17', 49);
+-- Volcando estructura para tabla condominio.auditoria
+CREATE TABLE IF NOT EXISTS `auditoria` (
+  `idAud` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`idAud`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.gruposfamiliares: ~5 rows (aproximadamente)
-INSERT INTO `gruposfamiliares` (`idUsu`, `idFam`) VALUES
-	(10, 11),
-	(9, 11),
-	(28, 11),
-	(49, 31),
-	(50, 31);
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.pagomovil: ~2 rows (aproximadamente)
-INSERT INTO `pagomovil` (`idPmv`, `idUsu`, `idBan`, `status`, `telPmv`, `cedPmv`, `venta`) VALUES
-	(9, 10, 1, 1, '04129988086', '27863198', 1),
-	(10, 49, 1, 1, '04129988083', '27863198', 1);
+-- Volcando estructura para tabla condominio.bancos
+CREATE TABLE IF NOT EXISTS `bancos` (
+  `idBan` int(11) NOT NULL AUTO_INCREMENT,
+  `nomBan` varchar(50) NOT NULL,
+  `codBan` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idBan`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.pagoservicios: ~0 rows (aproximadamente)
-INSERT INTO `pagoservicios` (`idFac`, `tipoPag`, `refPag`, `montoPag`, `comprobantePag`) VALUES
-	(30, 'Pago Movil', '546354', 25, '');
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.pagosventa: ~0 rows (aproximadamente)
+-- Volcando estructura para tabla condominio.compra
+CREATE TABLE IF NOT EXISTS `compra` (
+  `idCom` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) DEFAULT NULL,
+  `idProv` int(11) NOT NULL,
+  `monto` float NOT NULL DEFAULT 0,
+  `porcentaje` float NOT NULL,
+  `fecha_compra` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idCom`),
+  KEY `FK1compra_proveedor` (`idProv`),
+  KEY `FK2compra_usuario` (`idUsu`),
+  CONSTRAINT `FK1compra_proveedor` FOREIGN KEY (`idProv`) REFERENCES `proveedor` (`idProv`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK2compra_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.producto: ~1 rows (aproximadamente)
-INSERT INTO `producto` (`idPro`, `idUsu`, `nomPro`, `costoPro`, `existPro`, `imgPro`, `status`) VALUES
-	(21, 49, 'electric drink carabao', 24, 80, 'productos/21.jpg', 1);
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.proveedor: ~0 rows (aproximadamente)
-INSERT INTO `proveedor` (`idProv`, `idUsu`, `RIF`, `nomProv`) VALUES
-	(13, 10, '27863198', 'Luis Alba'),
-	(14, 49, '27863199', 'luis');
+-- Volcando estructura para tabla condominio.compraproductos
+CREATE TABLE IF NOT EXISTS `compraproductos` (
+  `idPro` int(11) NOT NULL,
+  `idCom` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `costo` float NOT NULL DEFAULT 0,
+  KEY `FK1productos_compra` (`idPro`),
+  KEY `FK2compra_productos` (`idCom`),
+  CONSTRAINT `FK1productos_compra` FOREIGN KEY (`idPro`) REFERENCES `producto` (`idPro`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK2compra_productos` FOREIGN KEY (`idCom`) REFERENCES `compra` (`idCom`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.pushmessages: ~0 rows (aproximadamente)
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.roles: ~3 rows (aproximadamente)
-INSERT INTO `roles` (`idRol`, `nomRol`, `nivelRol`) VALUES
-	(1, 'Administrador', 1),
-	(2, 'Habitante', 3);
+-- Volcando estructura para tabla condominio.factura
+CREATE TABLE IF NOT EXISTS `factura` (
+  `idFac` int(11) NOT NULL AUTO_INCREMENT,
+  `idSer` int(11) NOT NULL,
+  `idFam` int(11) NOT NULL,
+  `montoFac` float NOT NULL,
+  `fechapagFac` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` int(11) NOT NULL DEFAULT 2,
+  `meses` int(11) NOT NULL,
+  PRIMARY KEY (`idFac`),
+  KEY `FK_servicio_factura` (`idSer`),
+  KEY `FK_servicio_familia` (`idFam`),
+  CONSTRAINT `FK_servicio_factura` FOREIGN KEY (`idSer`) REFERENCES `servicios` (`idSer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_servicio_familia` FOREIGN KEY (`idFam`) REFERENCES `familias` (`idFam`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.servicios: ~1 rows (aproximadamente)
-INSERT INTO `servicios` (`idSer`, `idPmv`, `descSer`, `isMensualSer`, `montoSer`, `statusSer`, `fechaInicioServicio`) VALUES
-	(16, 9, 'Pago de luz', 1, 25, 1, '2023-07-01');
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.token_access: ~2 rows (aproximadamente)
-INSERT INTO `token_access` (`id`, `idUsu`, `token`, `fecha_registro`) VALUES
-	(104, 10, '10|11|1|aa28f58739f8961998f78e090641672d3f0531fe7db1e2e793d79a55e42cca71541d5e9bee7352da2b02982d0782eb7be7a7', '2023-07-01 14:26:29'),
-	(106, 10, '10|11|1|04a22e60fcb67a4a12097a407cb44eedad9bcfa6f9d23b68e64d0f69aff4f2d76174b9ecc845dc2444f7359b0ed743103cd4', '2023-07-01 14:37:11');
+-- Volcando estructura para tabla condominio.familias
+CREATE TABLE IF NOT EXISTS `familias` (
+  `idFam` int(11) NOT NULL AUTO_INCREMENT,
+  `descFam` varchar(50) NOT NULL,
+  `hashFam` varchar(250) NOT NULL,
+  `direccion` varchar(50) NOT NULL,
+  `idUsu` int(11) NOT NULL,
+  PRIMARY KEY (`idFam`),
+  KEY `FK1_jefe_familia` (`idUsu`),
+  CONSTRAINT `FK1_jefe_familia` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.usuarios: ~5 rows (aproximadamente)
-INSERT INTO `usuarios` (`idUsu`, `idRol`, `statusUsu`, `cedUsu`, `nomUsu`, `apeUsu`, `generoUsu`, `telUsu`, `claveUsu`, `imgUsu`) VALUES
-	(9, 2, 1, '7241160', 'Elizabeth', 'Rangel', 'Femenino', '04129988083', 'e3479b6d3dfeb60fe9e111235256738059c137dddd24b307f37afec1b7a1dd8f9c8c6c30779b1cae9970b4094af287b3e1cc03dbf1c7beb7000fc250fb11189e', 'profile/default.png'),
-	(10, 1, 1, '7235846', 'Luis', 'Albarracin', 'Masculino', '04123344452', '599ea529a46eb65177538638b292aa2c85f28ba4899b7a23d4e75c9757e899557948b720235ec1ca01f07745971ee67a15449ee15c4084e39e88bb7148a2431a', 'profile/default.png'),
-	(28, 2, 1, '17015265', 'Karina', 'Albarracin', 'Femenino', '04129988081', 'e3479b6d3dfeb60fe9e111235256738059c137dddd24b307f37afec1b7a1dd8f9c8c6c30779b1cae9970b4094af287b3e1cc03dbf1c7beb7000fc250fb11189e', 'profile/default.png'),
-	(49, 2, 1, '27863198', 'luis', 'Albarracin ', 'Masculino', '04129988083', '0f74c20f293baa5ac4ed4e24755f32e06620be14cc9fddb98d2a54519e2181ce2a0adfc2668e1cd556a7008bb4bc97a0d81c9f9994ec904f7f833f4f8bf698c8', 'profile/default.png'),
-	(50, 2, 1, '29780428', 'Francis', 'Baloa', 'Femenino', '04129988083', 'da0157fd7b3a41553383201083eed505dcc264fe3bb0817724037403d61b84f152f83ce9f5d8443e7b7f21f1521dcb8019a03ee9bd30f94498f48855ef6a372e', 'profile/default.png');
+-- La exportación de datos fue deseleccionada.
 
--- Volcando datos para la tabla condominio.venta: ~0 rows (aproximadamente)
+-- Volcando estructura para tabla condominio.familiaurbanizacion
+CREATE TABLE IF NOT EXISTS `familiaurbanizacion` (
+  `idFam` int(11) NOT NULL,
+  `idUrb` int(11) NOT NULL,
+  KEY `familiaurbanizacion_FK` (`idFam`),
+  KEY `familiaurbanizacion_FK_1` (`idUrb`),
+  CONSTRAINT `familiaurbanizacion_FK` FOREIGN KEY (`idFam`) REFERENCES `familias` (`idFam`),
+  CONSTRAINT `familiaurbanizacion_FK_1` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.ventaproductos: ~0 rows (aproximadamente)
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.gruposfamiliares
+CREATE TABLE IF NOT EXISTS `gruposfamiliares` (
+  `idUsu` int(11) NOT NULL,
+  `idFam` int(11) NOT NULL,
+  KEY `FK_familia_grupos` (`idFam`),
+  KEY `FK_usuarios_grupos` (`idUsu`),
+  CONSTRAINT `FK_familia_grupos` FOREIGN KEY (`idFam`) REFERENCES `familias` (`idFam`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_usuarios_grupos` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.pagomovil
+CREATE TABLE IF NOT EXISTS `pagomovil` (
+  `idPmv` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) NOT NULL,
+  `idBan` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1,
+  `telPmv` varchar(11) NOT NULL,
+  `cedPmv` varchar(11) NOT NULL,
+  `venta` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idPmv`),
+  KEY `FK_pagomovil_usuario` (`idUsu`),
+  KEY `FK_pagomovil_banco` (`idBan`),
+  CONSTRAINT `FK_pagomovil_banco` FOREIGN KEY (`idBan`) REFERENCES `bancos` (`idBan`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_pagomovil_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.pagoservicios
+CREATE TABLE IF NOT EXISTS `pagoservicios` (
+  `idFac` int(11) NOT NULL,
+  `tipoPag` varchar(50) NOT NULL,
+  `refPag` varchar(50) NOT NULL,
+  `montoPag` float NOT NULL,
+  `comprobantePag` varchar(50) NOT NULL DEFAULT '',
+  KEY `FK_pagoservicio_factura` (`idFac`),
+  CONSTRAINT `FK_pagoservicio_factura` FOREIGN KEY (`idFac`) REFERENCES `factura` (`idFac`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.pagosventa
+CREATE TABLE IF NOT EXISTS `pagosventa` (
+  `idVen` int(11) NOT NULL,
+  `tipoPag` varchar(50) NOT NULL DEFAULT '',
+  `refPag` varchar(50) NOT NULL DEFAULT '',
+  `monto` float NOT NULL DEFAULT 0,
+  KEY `FK1_pagos_venta` (`idVen`),
+  CONSTRAINT `FK1_pagos_venta` FOREIGN KEY (`idVen`) REFERENCES `venta` (`idVen`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.producto
+CREATE TABLE IF NOT EXISTS `producto` (
+  `idPro` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) NOT NULL,
+  `nomPro` varchar(50) NOT NULL,
+  `divisa` tinyint(4) NOT NULL DEFAULT 0,
+  `costoPro` float NOT NULL DEFAULT 0,
+  `existPro` int(11) NOT NULL DEFAULT 0,
+  `imgPro` varchar(250) DEFAULT NULL,
+  `status` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idPro`),
+  KEY `FK_producto_usuario` (`idUsu`),
+  CONSTRAINT `FK_producto_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.proveedor
+CREATE TABLE IF NOT EXISTS `proveedor` (
+  `idProv` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) NOT NULL,
+  `RIF` varchar(50) NOT NULL DEFAULT '',
+  `nomProv` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`idProv`),
+  KEY `FK1proveedor_usuario` (`idUsu`),
+  CONSTRAINT `FK1proveedor_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.pushmessages
+CREATE TABLE IF NOT EXISTS `pushmessages` (
+  `idNot` int(11) NOT NULL AUTO_INCREMENT,
+  `tituloNot` varchar(250) NOT NULL,
+  `descNot` varchar(250) NOT NULL,
+  `imgNot` varchar(250) NOT NULL,
+  `statusNot` int(11) NOT NULL DEFAULT 1,
+  `allNot` int(11) NOT NULL DEFAULT 0,
+  `idUsu` int(11) DEFAULT NULL,
+  `tipoNot` varchar(250) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`idNot`),
+  KEY `notificaciones_usuario` (`idUsu`),
+  CONSTRAINT `notificaciones_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `idRol` int(11) NOT NULL AUTO_INCREMENT,
+  `nomRol` varchar(50) NOT NULL,
+  `nivelRol` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idRol`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.servicios
+CREATE TABLE IF NOT EXISTS `servicios` (
+  `idSer` int(11) NOT NULL AUTO_INCREMENT,
+  `idPmv` int(11) NOT NULL,
+  `idUrb` int(11) NOT NULL DEFAULT 1,
+  `descSer` varchar(50) NOT NULL,
+  `isMensualSer` int(11) NOT NULL DEFAULT 0,
+  `divisa` tinyint(4) NOT NULL DEFAULT 0,
+  `montoSer` float NOT NULL,
+  `statusSer` int(11) NOT NULL DEFAULT 1,
+  `fechaInicioServicio` date NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idSer`),
+  KEY `FK_servicios_pagomovil` (`idPmv`),
+  KEY `FK2_servicios_urbanizacion` (`idUrb`),
+  CONSTRAINT `FK2_servicios_urbanizacion` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_servicios_pagomovil` FOREIGN KEY (`idPmv`) REFERENCES `pagomovil` (`idPmv`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.token_access
+CREATE TABLE IF NOT EXISTS `token_access` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `idUsu` int(11) NOT NULL,
+  `token` varchar(250) NOT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `FK1_token_user` (`idUsu`),
+  CONSTRAINT `FK1_token_user` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.urbanizacion
+CREATE TABLE IF NOT EXISTS `urbanizacion` (
+  `idUrb` int(11) NOT NULL AUTO_INCREMENT,
+  `nomUrb` varchar(100) NOT NULL,
+  `direccion` varchar(50) NOT NULL DEFAULT '',
+  `status` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idUrb`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.usuarioadmin
+CREATE TABLE IF NOT EXISTS `usuarioadmin` (
+  `idUsu` int(11) NOT NULL,
+  `idUrb` int(11) NOT NULL,
+  KEY `FK1_usu_admin` (`idUsu`),
+  KEY `FK2_urb_admin` (`idUrb`),
+  CONSTRAINT `FK1_usu_admin` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK2_urb_admin` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.usuarios
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `idUsu` int(11) NOT NULL AUTO_INCREMENT,
+  `idRol` int(11) NOT NULL DEFAULT 2,
+  `statusUsu` int(11) NOT NULL DEFAULT 0,
+  `cedUsu` varchar(10) NOT NULL,
+  `nomUsu` varchar(20) NOT NULL,
+  `apeUsu` varchar(20) NOT NULL,
+  `generoUsu` varchar(9) NOT NULL,
+  `telUsu` varchar(11) NOT NULL,
+  `claveUsu` varchar(250) NOT NULL,
+  `imgUsu` varchar(50) NOT NULL DEFAULT 'profile/default.png',
+  `divisa` double NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idUsu`),
+  KEY `FK_rol_usuario` (`idRol`),
+  CONSTRAINT `FK_rol_usuario` FOREIGN KEY (`idRol`) REFERENCES `roles` (`idRol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.venta
+CREATE TABLE IF NOT EXISTS `venta` (
+  `idVen` int(11) NOT NULL AUTO_INCREMENT,
+  `idVenUsu` int(11) NOT NULL,
+  `idCliUsu` int(11) NOT NULL,
+  `fechaVen` datetime NOT NULL DEFAULT current_timestamp(),
+  `montoVen` float NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idVen`),
+  KEY `FK1_usuario_venta` (`idVenUsu`),
+  KEY `FK2_usuario_cliente` (`idCliUsu`),
+  CONSTRAINT `FK1_usuario_venta` FOREIGN KEY (`idVenUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK2_usuario_cliente` FOREIGN KEY (`idCliUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
+
+-- Volcando estructura para tabla condominio.ventaproductos
+CREATE TABLE IF NOT EXISTS `ventaproductos` (
+  `idPro` int(11) NOT NULL,
+  `idVen` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `costo` int(11) NOT NULL,
+  KEY `FK1_producto_venta` (`idPro`),
+  KEY `FK2_venta_producto` (`idVen`),
+  CONSTRAINT `FK1_producto_venta` FOREIGN KEY (`idPro`) REFERENCES `producto` (`idPro`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK2_venta_producto` FOREIGN KEY (`idVen`) REFERENCES `venta` (`idVen`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- La exportación de datos fue deseleccionada.
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

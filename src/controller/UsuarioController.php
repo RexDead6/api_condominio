@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/model/UsuarioModel.php';
 require_once dirname(__DIR__) . '/model/FamiliaModel.php';
+require_once dirname(__DIR__) . '/model/UsuarioAdminModel.php';
 require_once dirname(__DIR__) . '/model/TokenAccess.php';
 require_once dirname(__DIR__) . '/util/Crypt.php';
 require_once dirname(__DIR__) . '/util/Response.php';
@@ -88,7 +89,11 @@ class UsuarioController
         foreach ($users as $user) {
             $fam = (new GruposFamiliaresModel())->where("idUsu", "=", $user->getIdUsu())->getFirst();
             $urbs = (new FamiliaUrbanizacionModel())->where("idFam", "=", $fam->getIdFam())->where("idUrb", "=", $idUrb)->getFirst();
-            if (isset($urbs)) $usersUrb[] = $user;
+            if (isset($urbs)) {
+                $isAdmin = (new UsuarioAdminModel())->where("idUsu", "=", $user->getIdUsu())->where("idUrb", "=", $idUrb)->getFirst();
+                $user->setIsAdmin(isset($isAdmin));
+                $usersUrb[] = $user;
+            }
         }
         return (
             new Response(
@@ -291,7 +296,7 @@ class UsuarioController
         $rol= (new RolModel())->where("nivelRol", "=", $nivelRol)->getFirst();
         if (!isset($rol)) {
             return (new Response(
-                false, 
+                false,
                 "Rol no existe", 
                 404
             ))->json();
@@ -304,6 +309,55 @@ class UsuarioController
             $result != false ? "Usuario actualizado" : "No se ha podido actualizar el usuario",
             $result != false ? 200 : 500,
         ))->json();
+    }
+
+    public function update_admin($token, $idUsu, $idUrb) {
+        if (((int) explode("|", $token)[2]) != 1) {
+            return (
+                new Response(
+                false,
+                "Permisos insuficientes",
+                401
+                )
+            )->json();
+        }
+
+        $user = (new UsuarioModel())->where("idUsu", "=", $idUsu)->getFirst();
+        if (!isset($user)) {
+            return (
+                new Response(
+                false,
+                "Usuario inexistente",
+                401
+                )
+            )->json();
+        }
+
+        $urb = (new UrbanizacionModel())->where("idUrb", "=", $idUrb)->getFirst();
+        if (!isset($urb)) {
+            return (
+                new Response(
+                false,
+                "Comunidad inexistente",
+                401
+                )
+            )->json();
+        }
+
+        $isAdmin = (new UsuarioAdminModel())->where("idUsu", "=", $idUsu)->where("idUrb", "=", $idUrb)->getFirst();
+        if ($isAdmin) {
+            $result = (new UsuarioAdminModel())->where("idUsu", "=", $idUsu)->where("idUrb", "=", $idUrb)->delete();
+        } else {
+            $result = (new UsuarioAdminModel())->insert(["idUsu" => $idUsu, "idUrb" => $idUrb]) == "0";
+        }
+
+        return (
+            new Response(
+            $result,
+            $result ? "Usuario actualizado con exito" : "No se ha podido actualizar su usuario",
+            $result ? 200 : 500
+            )
+        )->json();
     }
 }
 ?>
