@@ -94,7 +94,7 @@ class ServicioController{
         $newListServicios = [];
         $idFam = explode("|", $token)[1];
         foreach ($servicios as $servicio) {
-            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $idFam)->where("status", "<>", 0)->getFirst();
+            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $idFam)->where("status", "<>", 0)->orderBy("idFac")->getFirst();
             if ($servicio->getIsMensualSer() == 0) {
                 if (isset($ultimaFac)) {
                     continue;
@@ -103,16 +103,18 @@ class ServicioController{
             } else {
                 $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
                 $CurrentM = (int) date("m");
+                $date1 = date("Y-m-d", strtotime($servicio->getFechaInicioServicio()));
                 if (isset($ultimaFac)) {
                     $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
+                    $date1 = date("Y-m-d", strtotime("+".$ultimaFac->getMeses()." month", strtotime($ultimaFac->getFechapagoFac())));
                     if ($lastM === $CurrentM) {
                         continue;
                     }
                 }
-                /*$date2 = date("Y-m-d");
+                
+                $date2 = date("Y-m-d");
                 $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
-                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);*/
-                $servicio->setMesesPorPagar($CurrentM - $lastM);
+                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);
             }
             $newListServicios[] = $servicio;
         }

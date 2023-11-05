@@ -17,17 +17,14 @@ NAVIGATION APP
 2- Delete y Edit PagoMovil
 3- Delete y Edit Familias
 4- Auditorias
-1- Imagenes en Anuncios
 
 Realizar un administrador de los condominios
 
-Familia se registra sin registrar comunidad
 Editar foto de usuarios
 editar datos del usuario
 ajustar mensaje de pago movil cuando no existan
 Crear panel de administrador
 crear auditorias
-asignar y quitar administrador a un usuarios
 editar datos del producto
 quitar botones en administrador de productos a uno q no tape la vista
 editar forma de pago servicio (divisa o bolivares)
