@@ -11,6 +11,7 @@ class BaseModel{
     private $wheres = "";
     private $inner = "";
     private $order = "";
+    private $lim = "";
 
     public function __construct($table = null, $className = null){
 
@@ -24,7 +25,7 @@ class BaseModel{
         try {
 
             $tbl = substr($this->table, 0, 3);
-            $this->sql = "SELECT * FROM {$this->table} AS {$tbl} {$this->inner} {$this->wheres} {$this->order}";
+            $this->sql = "SELECT * FROM {$this->table} AS {$tbl} {$this->inner} {$this->wheres} {$this->order} {$this->lim}";
 
             $query = $this->connection->prepare($this->sql);
             $query->execute();
@@ -124,6 +125,11 @@ class BaseModel{
         $tbl = substr($table, 0, 3);
         $self_tbl = substr($second_table, 0, 3);
         $this->inner .= "INNER JOIN {$table} AS {$tbl} ON {$tbl}.{$column} = {$self_tbl}.{$column} ";
+        return $this;
+    }
+
+    public function limit($limit) {
+        $this->lim = "LIMIT ".$limit;
         return $this;
     }
 

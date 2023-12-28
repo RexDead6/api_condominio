@@ -33,6 +33,7 @@ $app->post("comunidad", UrbanizacionController::class, "insert", true);
 $app->get("comunidad", UrbanizacionController::class, "getAll");
 $app->get("comunidad/usuario", UrbanizacionController::class, "getUserUrb", true);
 $app->get("comunidad/{idUrb}", UrbanizacionController::class, "getById");
+$app->get("comunidadHome/{idUrb}", UrbanizacionController::class, "getStatitic", true);
 
 $app->post("familia", FamiliaController::class, "registrarFamilia");
 $app->get("familia", FamiliaController::class, "getByToken", true);
@@ -44,7 +45,7 @@ $app->delete("removeUserFam/:idUsu", FamiliaController::class, "eliminarMiembroF
 $app->patch("editJefeFam", FamiliaController::class, "editarJefeFamiliar", true);
 
 $app->post("anuncios", AnunciosController::class, "insertAnuncio", true);
-$app->get("anuncios", AnunciosController::class, "getAll");
+$app->get("anuncios/:idUrb", AnunciosController::class, "getAll");
 
 $app->get("notificaciones", NotificacionesController::class, "getNotificacionesPendientes", true);
 

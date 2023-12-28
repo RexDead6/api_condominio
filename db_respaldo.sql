@@ -32,21 +32,32 @@ INSERT INTO `ajustes` (`name`, `value`) VALUES
 -- Volcando estructura para tabla condominio.anuncios
 CREATE TABLE IF NOT EXISTS `anuncios` (
   `idAnu` int(11) NOT NULL AUTO_INCREMENT,
+  `idUrb` int(11) NOT NULL,
   `idUsu` int(11) NOT NULL,
   `descAnu` varchar(250) NOT NULL,
   `image` varchar(250) NOT NULL DEFAULT '',
   `fechaAnu` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`idAnu`),
   KEY `FK_anuncios_usuarios` (`idUsu`),
+  KEY `FK2_anuncios_urbanizacion` (`idUrb`),
+  CONSTRAINT `FK2_anuncios_urbanizacion` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_anuncios_usuarios` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.anuncios: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.anuncios: ~2 rows (aproximadamente)
+INSERT INTO `anuncios` (`idAnu`, `idUrb`, `idUsu`, `descAnu`, `image`, `fechaAnu`) VALUES
+	(45, 1, 10, 'Prueba anuncio', '', '2023-11-21 12:25:02'),
+	(46, 2, 10, 'Anuncio de caña de azúcar ', '', '2023-11-21 12:25:19');
 
 -- Volcando estructura para tabla condominio.auditoria
 CREATE TABLE IF NOT EXISTS `auditoria` (
   `idAud` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`idAud`)
+  `idUsu` int(11) NOT NULL,
+  `Descripcion` varchar(50) NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idAud`),
+  KEY `FK_auditoria_usuario` (`idUsu`),
+  CONSTRAINT `FK_auditoria_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Volcando datos para la tabla condominio.auditoria: ~0 rows (aproximadamente)
@@ -112,15 +123,17 @@ CREATE TABLE IF NOT EXISTS `factura` (
   KEY `FK_servicio_familia` (`idFam`),
   CONSTRAINT `FK_servicio_factura` FOREIGN KEY (`idSer`) REFERENCES `servicios` (`idSer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_servicio_familia` FOREIGN KEY (`idFam`) REFERENCES `familias` (`idFam`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.factura: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.factura: ~7 rows (aproximadamente)
 INSERT INTO `factura` (`idFac`, `idSer`, `idFam`, `montoFac`, `fechapagFac`, `status`, `meses`) VALUES
 	(30, 16, 31, 25, '2023-07-01 14:12:55', 1, 1),
-	(31, 18, 11, 58.9, '2023-07-30 18:05:34', 2, 1),
-	(32, 17, 11, 58.9, '2023-07-30 19:21:58', 2, 1),
-	(33, 19, 11, 4417.5, '2023-07-30 19:23:09', 2, 1),
-	(34, 18, 11, 117.8, '2023-09-30 16:23:50', 2, 2);
+	(31, 18, 11, 58.9, '2023-07-30 18:05:34', 1, 1),
+	(32, 17, 11, 58.9, '2023-07-30 19:21:58', 1, 1),
+	(33, 19, 11, 4417.5, '2023-07-30 19:23:09', 1, 1),
+	(34, 18, 11, 117.8, '2023-09-30 16:23:50', 1, 2),
+	(35, 18, 11, 58.9, '2023-11-05 13:37:01', 2, 4),
+	(36, 21, 11, 353.4, '2023-11-19 22:14:04', 1, 1);
 
 -- Volcando estructura para tabla condominio.familias
 CREATE TABLE IF NOT EXISTS `familias` (
@@ -152,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `familiaurbanizacion` (
   CONSTRAINT `familiaurbanizacion_FK_1` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.familiaurbanizacion: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.familiaurbanizacion: ~6 rows (aproximadamente)
 INSERT INTO `familiaurbanizacion` (`idFam`, `idUrb`) VALUES
 	(11, 1),
 	(31, 1),
@@ -171,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `gruposfamiliares` (
   CONSTRAINT `FK_usuarios_grupos` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.gruposfamiliares: ~6 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.gruposfamiliares: ~5 rows (aproximadamente)
 INSERT INTO `gruposfamiliares` (`idUsu`, `idFam`) VALUES
 	(10, 11),
 	(28, 11),
@@ -219,7 +232,9 @@ INSERT INTO `pagoservicios` (`idFac`, `tipoPag`, `refPag`, `montoPag`, `comproba
 	(31, 'Pago Movil', '5454884', 2, ''),
 	(32, 'Pago Movil', '646454', 2, ''),
 	(33, 'Pago Movil', '646464', 150, ''),
-	(34, 'Pago Movil', '6464', 4, '');
+	(34, 'Pago Movil', '6464', 4, ''),
+	(35, 'Pago Movil', '54545', 2, ''),
+	(36, 'Pago Movil', '2308', 12, '');
 
 -- Volcando estructura para tabla condominio.pagosventa
 CREATE TABLE IF NOT EXISTS `pagosventa` (
@@ -315,7 +330,7 @@ CREATE TABLE IF NOT EXISTS `servicios` (
   KEY `FK2_servicios_urbanizacion` (`idUrb`),
   CONSTRAINT `FK2_servicios_urbanizacion` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_servicios_pagomovil` FOREIGN KEY (`idPmv`) REFERENCES `pagomovil` (`idPmv`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Volcando datos para la tabla condominio.servicios: ~4 rows (aproximadamente)
 INSERT INTO `servicios` (`idSer`, `idPmv`, `idUrb`, `descSer`, `isMensualSer`, `divisa`, `montoSer`, `statusSer`, `fechaInicioServicio`) VALUES
@@ -323,7 +338,8 @@ INSERT INTO `servicios` (`idSer`, `idPmv`, `idUrb`, `descSer`, `isMensualSer`, `
 	(17, 9, 1, 'Agua mensual', 1, 1, 2, 1, '2023-07-08'),
 	(18, 9, 1, 'condominio mensualidad', 1, 1, 2, 1, '2023-07-19'),
 	(19, 9, 1, 'pago', 0, 1, 150, 1, '2023-07-30'),
-	(20, 9, 2, 'Luz solar', 1, 1, 20, 1, '2023-08-12');
+	(20, 9, 2, 'Luz solar', 1, 1, 20, 1, '2023-08-12'),
+	(21, 9, 1, 'mantenimiento areas verdes', 1, 1, 12, 1, '2023-11-19');
 
 -- Volcando estructura para tabla condominio.token_access
 CREATE TABLE IF NOT EXISTS `token_access` (
@@ -334,9 +350,9 @@ CREATE TABLE IF NOT EXISTS `token_access` (
   PRIMARY KEY (`id`),
   KEY `FK1_token_user` (`idUsu`),
   CONSTRAINT `FK1_token_user` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.token_access: ~13 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.token_access: ~12 rows (aproximadamente)
 INSERT INTO `token_access` (`id`, `idUsu`, `token`, `fecha_registro`) VALUES
 	(118, 51, '51|00|2|b25a49a391911b988163555f15ccb876d2613b373d9f0ff28090a5c2e9ebdc10ffa23f1907f91f8739661da74d9851247818', '2023-07-07 10:58:11'),
 	(119, 51, '51|32|3|ccdeb3535ce004d7e779ef0dea83613171dcebe69ff665580874202b4b7dc423d9d5fe71b9edaf87b63bb215faa75b4c574f', '2023-07-07 11:00:28'),
@@ -350,7 +366,10 @@ INSERT INTO `token_access` (`id`, `idUsu`, `token`, `fecha_registro`) VALUES
 	(153, 10, '10|11|1|1d68928b3a1c4ed809d012eae0f0dbc7c7e734382032b62634afe0635580a068d392566cc7efa581af1d95930b2aeeee7f76', '2023-09-06 16:23:01'),
 	(154, 10, '10|11|1|5361e8adbb55c9ac064c9757222c3a95867ff1b9329d2066909f3e461dcd2f407ecd8460af3507656a5010715a2774089292', '2023-09-06 16:25:30'),
 	(155, 10, '10|11|1|c14c21fe48f3db878a2360e5def0ec51ce0786431f53d9412153dd5117163a126fe8aeaa617a5938eb850784b36f53e84b5a', '2023-09-28 12:09:28'),
-	(158, 10, '10|11|1|855a78a1f819df9b9dcf9cb1cde27d2f37d6d53a1377f2b514474d5745dce4244b6a0f49bb28bc43a8fe328b1cea78a68ff5', '2023-10-09 14:51:04');
+	(159, 10, '10|11|1|7b774d142f561a0e72df774b6e7bb3ec288fabedd04b09f77031b68dc9177bcaecc22b38e8ba5648674f18c46541e880cda4', '2023-10-21 18:34:34'),
+	(160, 10, '10|11|1|1d2c74775541d3ada7a769f9ee655133bf2d8390f2cc93050f677fc289d5d9fd5502e0978f78f4e5a094892f3d0595f62f41', '2023-11-05 15:44:51'),
+	(161, 10, '10|11|1|a1b5189f5cbb1d042e0b18d0274c2d6ce63ca5569d5bed59d82ad937faae0ab3d70d844ac9cb82627a216ac83070f9fa2c4e', '2023-11-17 15:55:59'),
+	(162, 10, '10|11|1|9ca97fa9c24bc30fa8d7953de8aee310145f30febbb14ec20176d23388ff41cc965e8a610b5a594e9c597196392e8ebf32c0', '2023-11-19 20:58:15');
 
 -- Volcando estructura para tabla condominio.urbanizacion
 CREATE TABLE IF NOT EXISTS `urbanizacion` (
@@ -361,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `urbanizacion` (
   PRIMARY KEY (`idUrb`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.urbanizacion: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.urbanizacion: ~5 rows (aproximadamente)
 INSERT INTO `urbanizacion` (`idUrb`, `nomUrb`, `direccion`, `status`) VALUES
 	(1, 'Alma mater', 'El paseo, El limon', 1),
 	(2, 'Caña de azucar', 'Caña de azucar', 1),
@@ -379,7 +398,7 @@ CREATE TABLE IF NOT EXISTS `usuarioadmin` (
   CONSTRAINT `FK2_urb_admin` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla condominio.usuarioadmin: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla condominio.usuarioadmin: ~2 rows (aproximadamente)
 INSERT INTO `usuarioadmin` (`idUsu`, `idUrb`) VALUES
 	(10, 1);
 

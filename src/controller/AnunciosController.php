@@ -21,11 +21,13 @@ class AnunciosController{
         }
 
         $desc = $_POST['descAnu'];
+        $idUrb = $_POST['idUrb'];
         $path_image = "";
 
         $idAnu = (new AnunciosModel())->insert([
             'idUsu'=> (int) explode("|", $token)[0],
             'descAnu' => $desc,
+            'idUrb' => $idUrb
         ]);
 
         if (isset($_FILES['image'])){
@@ -51,8 +53,8 @@ class AnunciosController{
         ))->json();
     }
 
-    public function getAll(){
-        $anuncios = (new AnunciosModel())->inner("usuarios", "idUsu")->inner("roles", "idRol", "usuarios")->orderBy("idAnu")->getAll();
+    public function getAll($idUrb){
+        $anuncios = (new AnunciosModel())->inner("usuarios", "idUsu")->inner("roles", "idRol", "usuarios")->where("idUrb", "=", $idUrb)->orderBy("idAnu")->getAll();
         return (new Response(
             count($anuncios) > 0,
             count($anuncios) > 0 ? "Anuncios encontrados" : "No hay anuncios disponibles",

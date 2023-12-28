@@ -30,21 +30,29 @@ CREATE TABLE IF NOT EXISTS `ajustes` (
 -- Volcando estructura para tabla condominio.anuncios
 CREATE TABLE IF NOT EXISTS `anuncios` (
   `idAnu` int(11) NOT NULL AUTO_INCREMENT,
+  `idUrb` int(11) NOT NULL,
   `idUsu` int(11) NOT NULL,
   `descAnu` varchar(250) NOT NULL,
   `image` varchar(250) NOT NULL DEFAULT '',
   `fechaAnu` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`idAnu`),
   KEY `FK_anuncios_usuarios` (`idUsu`),
+  KEY `FK2_anuncios_urbanizacion` (`idUrb`),
+  CONSTRAINT `FK2_anuncios_urbanizacion` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_anuncios_usuarios` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- La exportación de datos fue deseleccionada.
 
 -- Volcando estructura para tabla condominio.auditoria
 CREATE TABLE IF NOT EXISTS `auditoria` (
   `idAud` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`idAud`)
+  `idUsu` int(11) NOT NULL,
+  `Descripcion` varchar(50) NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idAud`),
+  KEY `FK_auditoria_usuario` (`idUsu`),
+  CONSTRAINT `FK_auditoria_usuario` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- La exportación de datos fue deseleccionada.
@@ -104,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `factura` (
   KEY `FK_servicio_familia` (`idFam`),
   CONSTRAINT `FK_servicio_factura` FOREIGN KEY (`idSer`) REFERENCES `servicios` (`idSer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_servicio_familia` FOREIGN KEY (`idFam`) REFERENCES `familias` (`idFam`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -262,7 +270,7 @@ CREATE TABLE IF NOT EXISTS `servicios` (
   KEY `FK2_servicios_urbanizacion` (`idUrb`),
   CONSTRAINT `FK2_servicios_urbanizacion` FOREIGN KEY (`idUrb`) REFERENCES `urbanizacion` (`idUrb`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_servicios_pagomovil` FOREIGN KEY (`idPmv`) REFERENCES `pagomovil` (`idPmv`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- La exportación de datos fue deseleccionada.
 
@@ -275,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `token_access` (
   PRIMARY KEY (`id`),
   KEY `FK1_token_user` (`idUsu`),
   CONSTRAINT `FK1_token_user` FOREIGN KEY (`idUsu`) REFERENCES `usuarios` (`idUsu`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- La exportación de datos fue deseleccionada.
 
