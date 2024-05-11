@@ -120,25 +120,28 @@ class UrbanizacionController
         $monto = 0;
         $facturas = (new FacturaModel())->where("idFam", "=", $idFam)->orderBy("fechapagFac")->getAll();
         $gastosMeses = [];
-
+        
+        $gastosTemp = [];
         foreach ($facturas as $factura) {
-            if ($currentM == 0) {
-                $currentM = date("m", strtotime($factura->getFechapagoFac()));
-                $currentY = date("Y", strtotime($factura->getFechapagoFac()));
+            $currentM = date("m", strtotime($factura->getFechapagoFac()));
+            $currentY = date("Y", strtotime($factura->getFechapagoFac()));
+            if (array_key_exists($currentM."/".$currentY, $gastosTemp)) {
+                $gastosTemp[$currentM."/".$currentY] = $factura->getMontoFac() + $gastosTemp[$currentM."/".$currentY];
+            } else {
+                $gastosTemp[$currentM."/".$currentY] = $factura->getMontoFac();
             }
-
-            do {
-                if ($currentM != date("m", strtotime($factura->getFechapagoFac()))) {
-                    $mes = new MontoPorMesModel();
-                    $mes->setMes($currentM);
-                    $mes->setYear($currentY);
-                    $mes->setMonto($monto);
-                    $gastosMeses[] = $mes;
-
-                    
-                }
-            } while(true);
         }
+
+        foreach ($gastosTemp as $key => $value) {
+            $mes = new MontoPorMesModel();
+            $date = explode("/", $key);
+            $mes->setMes($date[0]);
+            $mes->setYear($date[1]);
+            $mes->setMonto($value);
+            $gastosMeses[] = $mes;
+        }
+
+        $static->setPagosMeses($gastosMeses);
 
         return (new Response(
             true,

@@ -1,5 +1,6 @@
 <?php
 require_once dirname( __DIR__ ) . '/model/AnunciosModel.php';
+require_once dirname( __DIR__ ) . '/model/AuditoriaModel.php';
 require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
 require_once dirname( __DIR__ ) . '/util/FileManager.php';
 class AnunciosController{
@@ -45,6 +46,11 @@ class AnunciosController{
             $anuncio->setImage($path_image);
             $anuncio->where("idAnu", "=", $idAnu)->update();
         }
+
+        (new AuditoriaModel())->insert([
+            "idUsu" => (int) explode("|", $token)[0],
+            "Descripcion" => "Registro de Anuncio nuevo"
+        ]);
 
         return (new Response(
             true, 

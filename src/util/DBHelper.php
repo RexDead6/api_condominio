@@ -3,6 +3,7 @@ class DBHelper{
     private $connection;
 
     // PROD
+    
     /*
     private $host = 'mysql-condominio.alwaysdata.net';
     private $user = '328326';
@@ -10,6 +11,7 @@ class DBHelper{
     private $db = 'condominio_db';
     private $charset = 'utf8mb4';
     */
+    
     // LOCAL
     
     private $host = 'localhost';
@@ -27,13 +29,11 @@ class DBHelper{
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ];
 
-            $this->connection = new PDO($connection, $this->user, $this->pass, $options);
-
-            return $this->connection;
+            return new PDO($connection, $this->user, $this->pass, $options);
 
         } catch(PDOException $e) {
             
-            echo 'Error en la conexión: ' . $e->getMessage();
+            //echo 'Error en la conexión: ' . $e->getMessage();
         }
     }
 }

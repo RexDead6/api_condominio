@@ -8,6 +8,7 @@ class StatiticHomeModel implements JsonSerializable {
     
     protected $ultimosAnuncios;
     protected $serviciosPorPagar;
+    protected $pagosMeses;
 
     public function setUltimosAnuncios($ultimosAnuncios) {
         $this->ultimosAnuncios = $ultimosAnuncios;
@@ -25,6 +26,15 @@ class StatiticHomeModel implements JsonSerializable {
 
     public function getServiciosPorPagar(){
         return $this->serviciosPorPagar;
+    }
+
+    public function setPagosMeses($pagosMeses){
+        $this->pagosMeses = $pagosMeses;
+        return $this;
+    }
+
+    public function getPagosMeses(){
+        return $this->pagosMeses;
     }
 }
 ?>

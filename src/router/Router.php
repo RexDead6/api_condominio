@@ -13,6 +13,7 @@ require_once dirname(__DIR__) . '/controller/CompraController.php';
 require_once dirname(__DIR__) . '/controller/VentaController.php';
 require_once dirname(__DIR__) . '/controller/AjustesController.php';
 require_once dirname(__DIR__) . '/controller/UrbanizacionController.php';
+require_once dirname(__DIR__) . '/controller/AuditoriaController.php';
 
 $app = new RouterHelper();
 
@@ -83,6 +84,8 @@ $app->get("venta/:type/:status", VentaController::class, "getAll", true);
 $app->patch("venta/:idVen/:status", VentaController::class, "updateStatus", true);
 
 $app->get("ajuste/:ajuste", AjustesController::class, "getAjuste");
+
+$app->get("auditoria", AuditoriaController::class, "getAll");
 
 $app->get("test", UsuarioController::class, "test");
 ?>

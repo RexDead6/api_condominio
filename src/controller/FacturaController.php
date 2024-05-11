@@ -13,7 +13,7 @@ class FacturaController{
         $JSON_DATA = json_decode(file_get_contents('php://input'), true) ?? [];
         $validate_keys = ValidateApp::keys_array_exist(
             $JSON_DATA,
-            ['idSer', 'montoFac', 'pagos']
+            ['idSer', 'montoFac', 'pagos', "meses"]
         );
 
         if (!$validate_keys[0]) {
@@ -51,32 +51,13 @@ class FacturaController{
                     )
                 )->json();
             }
-        } else {
-            $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
-                $CurrentM = (int) date("m");
-                if (isset($ultimaFac)) {
-                    $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
-                    if ($lastM === $CurrentM) {
-                        return (
-                            new Response(
-                            false,
-                            "Su Servicio mensual se encuentra al dia con el pago",
-                            400
-                            )
-                        )->json();
-                    }
-                }
-                /*$date2 = date("Y-m-d");
-                $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
-                $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);*/
-                $MesesPorPagar = ($CurrentM - $lastM);
-        }
+        } 
 
         $idFac = (new FacturaModel())->insert([
             "idSer" => $JSON_DATA['idSer'],
             "idFam" => $idFam,
             "montoFac" => $JSON_DATA['montoFac'],
-            "meses" => $MesesPorPagar
+            "meses" => $JSON_DATA["meses"]
         ]);
 
         if ($idFac == false) {
@@ -88,6 +69,11 @@ class FacturaController{
                 )
             )->json();
         }
+
+        (new AuditoriaModel())->insert([
+            "idUsu" => (int) explode("|", $token)[0],
+            "Descripcion" => "Registro de Venta (Referencia: ".$idFac.")"
+        ]);
 
         foreach ($JSON_DATA['pagos'] as $pago) {
             $pago['idFac'] = $idFac;
@@ -110,10 +96,10 @@ class FacturaController{
             "fecha_factura"=>$fac->getFechapagoFac(),
             "rows"=>[
                 [
-                    $servicio->getDescSer(), Formating::numberFormat($monto), $MesesPorPagar, Formating::numberFormat($monto * $MesesPorPagar)
+                    $servicio->getDescSer(), Formating::numberFormat($monto), $JSON_DATA["meses"], Formating::numberFormat($monto * $JSON_DATA["meses"])
                 ]
             ],
-            "total"=>Formating::numberFormat($monto * $MesesPorPagar)
+            "total"=>Formating::numberFormat($monto * $JSON_DATA["meses"])
         ]);
         $pdfManager->output("servicio_$idFac.pdf");
 

@@ -131,15 +131,15 @@ class ServicioController{
 
     public function getAllAdmin($token, $idUrb)
     {
-        if (((int) explode("|", $token)[2]) != 1) {
-            return (
-                new Response(
-                false,
-                "Permisos insuficientes",
-                401
-                )
-            )->json();
-        }
+        // if (((int) explode("|", $token)[2]) != 1) {
+        //     return (
+        //         new Response(
+        //         false,
+        //         "Permisos insuficientes",
+        //         401
+        //         )
+        //     )->json();
+        // }
 
         $urbanizacion = (new UrbanizacionModel())->where("idUrb", "=", $idUrb)->getFirst();
         if (!isset($urbanizacion)){

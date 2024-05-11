@@ -211,19 +211,19 @@ class FamiliaController{
             'idFam' => $familia->getIdFam()
         ]);
 
-        $user = (new UsuarioModel())->where("idUsu", "=", explode("|", $token)[0])->getFirst();
+        $user = (new UsuarioModel())->inner("roles", "idRol")->where("idUsu", "=", explode("|", $token)[0])->getFirst();
 
         (new TokenAccess())->where("token", "=", $token)->delete();
 
-        $token = $user->getIdUsu()."|".$familia->getIdFam()."|".$user->getRol()->getIdRol()."|".bin2hex(random_bytes(50));
+        $tokenNew = $user->getIdUsu()."|".$familia->getIdFam()."|2|".bin2hex(random_bytes(50));
 
         (new TokenAccess())->insert([
             "idUsu" => $user->getIdUsu(),
-            "token" => $token
+            "token" => $tokenNew
         ]);
 
         $data_response = [
-            "token" => $token
+            "token" => $tokenNew
         ];
 
         return (new Response(

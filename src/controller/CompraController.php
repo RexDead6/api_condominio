@@ -50,6 +50,11 @@ class CompraController{
 
         $compra = (new CompraModel())->where("idCom", "=", $idCom)->getFirst();
 
+        (new AuditoriaModel())->insert([
+            "idUsu" => (int) explode("|", $token)[0],
+            "Descripcion" => "Registro de Compra (Referencia: ".$idCom.")"
+        ]);
+
         $pdfData['rif'] = $prov->getRIF();
         $pdfData['proveedor'] = $prov->getNomProv();
         $pdfData['n_factura'] = $idCom;
