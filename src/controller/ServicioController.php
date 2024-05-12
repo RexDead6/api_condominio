@@ -110,8 +110,11 @@ class ServicioController{
                     if ($lastM === $CurrentM) {
                         continue;
                     }
+                } else {
+                    $familia = (new FamiliaModel())->where("idFam", "=", $idFam)->getFirst();
+                    $date1 = date("Y-m-d", strtotime($familia->getFecha_creacion()));
                 }
-                
+
                 $date2 = date("Y-m-d");
                 $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
                 $servicio->setMesesPorPagar(((($timeRaw->y) * 12) + ($timeRaw->m)) + 1);

@@ -9,6 +9,7 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
     protected $descFam;
     protected $hashFam;
     protected $direccion;
+	protected $fecha_creacion;
 	protected $users;
 	protected $JefeFamilia;
 
@@ -123,7 +124,16 @@ class FamiliaModel extends GenericModel implements JsonSerializable{
 	}
 
 	public function getIdUsu() {
-		$this->idUsu;
+		return $this->idUsu;
+	}
+
+	public function setFecha_creacion($fecha_creacion): self {
+		$this->fecha_creacion = $fecha_creacion;
+		return $this;
+	}
+
+	public function getFecha_creacion() {
+		return $this->fecha_creacion;
 	}
 }
 ?>

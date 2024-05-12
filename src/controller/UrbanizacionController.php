@@ -105,6 +105,9 @@ class UrbanizacionController
                     if ($lastM === $CurrentM) {
                         continue;
                     }
+                } else {
+                    $familia = (new FamiliaModel())->where("idFam", "=", $idFam)->getFirst();
+                    $date1 = date("Y-m-d", strtotime($familia->getFecha_creacion()));
                 }
                 
                 $date2 = date("Y-m-d");
