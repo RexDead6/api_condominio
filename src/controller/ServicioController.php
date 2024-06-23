@@ -8,6 +8,7 @@ require_once dirname( __DIR__ ) . '/util/ValidateApp.php';
 require_once dirname( __DIR__ ) . '/model/TokenAccess.php';
 require_once dirname( __DIR__ ) . '/model/FacturaModel.php';
 require_once dirname( __DIR__ ) . '/model/PagoServiciosModel.php';
+require_once dirname( __DIR__ ) . '/util/PDFManager.php';
 
 class ServicioController{
     public function insert($token) {
@@ -164,6 +165,146 @@ class ServicioController{
         )->json();
     }
 
+    public function reportNoPagados($idSer){
+        $servicio = (new ServicioModel())->where("idSer", "=", $idSer)->getFirst();
+        $fams_raw = (new FamiliaUrbanizacionModel())->where("idUrb", "=", $servicio->idUrb)->getAll();
+        $rows = [];
+        
+        foreach ($fams_raw as $fam_raw) {
+            $familia = (new FamiliaModel())->where("idFam", "=",$fam_raw->getIdFam())->inner("usuarios", "idUsu")->getFirst();
+            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $familia->getIdFam())->where("status", "<>", 0)->orderBy("idFac")->getFirst();
+            $meses = 0;
+            if ($servicio->getIsMensualSer() == 0) {
+                if (isset($ultimaFac)) {
+                    continue;
+                }
 
+                $meses = 1;
+            } else {
+                $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
+                $CurrentM = (int) date("m");
+                $date1 = date("Y-m-d", strtotime($servicio->getFechaInicioServicio()));
+                if (isset($ultimaFac)) {
+                    $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
+                    $date1 = date("Y-m-d", strtotime("+".$ultimaFac->getMeses()." month", strtotime($ultimaFac->getFechapagoFac())));
+                    if ($lastM === $CurrentM) {
+                        continue;
+                    }
+                } else {
+                    $date1 = date("Y-m-d", strtotime($familia->getFecha_creacion()));
+                }
+
+                $date2 = date("Y-m-d");
+                $timeRaw = (new DateTime($date1))->diff(new DateTime($date2));
+                $meses = ((($timeRaw->y) * 12) + ($timeRaw->m)) + 1;
+            }
+
+            $rows[] = [
+                $familia->getDescFam(), 
+                $familia->getJefeFamilia()->getNomUsu() . " " . $familia->getJefeFamilia()->getApeUsu(), 
+                $familia->getJefeFamilia()->getCedUsu(),
+                $meses
+            ];
+        }
+
+        if (count($rows) <= 0){
+            return (
+                new Response(
+                    true,
+                    "No hay familias con deudas pendientes",
+                    404
+                )
+            )->json();
+        }
+
+        $pdfManager = new PDFManager();
+        $pdfManager->template("no_pagados.template.html", [
+            "nombre_servicio" => $servicio->getDescSer(),
+            "n_familias"      => count($rows),
+            "rows"            => $rows
+        ]);
+        $ran = bin2hex(random_bytes(5));
+        $name = "no_pagado_".$idSer."_".$ran.".pdf";
+        $pdfManager->output($name);
+
+        return (
+            new Response(
+                true,
+                "Reporte generado con exito",
+                200,
+                [
+                    "name"=>$name
+                ]
+            )
+        )->json();
+    }
+
+    public function reportPagados($idSer){
+        $servicio = (new ServicioModel())->where("idSer", "=", $idSer)->getFirst();
+        $fams_raw = (new FamiliaUrbanizacionModel())->where("idUrb", "=", $servicio->idUrb)->getAll();
+        $rows = [];
+        
+        foreach ($fams_raw as $fam_raw) {
+            $familia = (new FamiliaModel())->where("idFam", "=",$fam_raw->getIdFam())->inner("usuarios", "idUsu")->getFirst();
+            $ultimaFac = (new FacturaModel)->where("idSer", "=", $servicio->getIdSer())->where("idFam", "=", $familia->getIdFam())->where("status", "<>", 0)->orderBy("idFac")->getFirst();
+            $meses = 0;
+            if ($servicio->getIsMensualSer() == 0) {
+                if (!isset($ultimaFac)) {
+                    continue;
+                }
+
+            } else {
+                $lastM = ((int) date("m", strtotime($servicio->getFechaInicioServicio()))) - 1;
+                $CurrentM = (int) date("m");
+                $date1 = date("Y-m-d", strtotime($servicio->getFechaInicioServicio()));
+                if (isset($ultimaFac)) {
+                    $lastM = (int) date("m", strtotime($ultimaFac->getFechapagoFac()));
+                    $date1 = date("Y-m-d", strtotime("+".$ultimaFac->getMeses()." month", strtotime($ultimaFac->getFechapagoFac())));
+                    if ($lastM !== $CurrentM) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            }
+
+            $rows[] = [
+                $familia->getDescFam(), 
+                $familia->getJefeFamilia()->getNomUsu() . " " . $familia->getJefeFamilia()->getApeUsu(), 
+                $familia->getJefeFamilia()->getCedUsu()
+            ];
+        }
+        
+        if (count($rows) <= 0){
+            return (
+                new Response(
+                    true,
+                    "No hay familias solventes",
+                    404
+                )
+            )->json();
+        }
+
+        $pdfManager = new PDFManager();
+        $pdfManager->template("pagados.template.html", [
+            "nombre_servicio" => $servicio->getDescSer(),
+            "n_familias"      => count($rows),
+            "rows"            => $rows
+        ]);
+        $ran = bin2hex(random_bytes(5));
+        $name = "pagado_".$idSer."_".$ran.".pdf";
+        $pdfManager->output($name);
+
+        return (
+            new Response(
+                true,
+                "Reporte generado con exito",
+                200,
+                [
+                    "name"=>$name
+                ]
+            )
+        )->json();
+    }
 }
 ?>
