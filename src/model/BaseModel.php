@@ -18,7 +18,19 @@ class BaseModel{
         $this->connection = (new DBHelper())->connect();
         $this->table = $table;
         $this->className = $className;
-    }  
+    }
+
+    public function rawQuery($query) {
+        try {
+            $status = $this->connection->prepare($this->sql);
+            $status->execute();
+
+            return $status->fetchAll();
+        } catch (PDOException $error) {
+            //echo $error->getMessage();
+            return null;
+        }
+    }
 
     //Método para obtener todos los registros de una tabla
     public function getAll(){
