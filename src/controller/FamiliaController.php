@@ -333,5 +333,33 @@ class FamiliaController{
             $success ? 200 : 500
         ))->json();
     }
+
+    public function reportFamilias($idUrb){
+        $usuarios = (new BaseModel())->rawQuery("SELECT usu.cedUsu, usu.nomUsu, usu.apeUsu, usu.generoUsu, usu.telUsu, fam.descFam FROM usuarios AS usu
+                                                    INNER JOIN gruposfamiliares AS gru ON usu.idUsu = gru.idUsu
+                                                    INNER JOIN familias AS fam ON fam.idFam = gru.idFam
+                                                    INNER JOIN familiaurbanizacion AS furb ON furb.idFam = fam.idFam
+                                                    WHERE furb.idUrb = ".$idUrb."
+                                                    ORDER BY fam.descFam ASC;");
+        
+        $pdfManager = new PDFManager();
+        $pdfManager->template("usuarios.template.html", [
+            "n_habitantes" => count($usuarios),
+            "rows" => $usuarios
+        ]);
+        $ran = bin2hex(random_bytes(5));
+        $name = "usuarios_".$ran.".pdf";
+        $pdfManager->output($name);
+        return (
+            new Response(
+                true,
+                "Reporte generado con exito",
+                200,
+                [
+                    "name"=>$name
+                ]
+            )
+        )->json();
+    }
 }
 ?>

@@ -22,10 +22,10 @@ class BaseModel{
 
     public function rawQuery($query) {
         try {
-            $status = $this->connection->prepare($this->sql);
+            $status = $this->connection->prepare($query);
             $status->execute();
 
-            return $status->fetchAll();
+            return $status->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $error) {
             //echo $error->getMessage();
             return null;
